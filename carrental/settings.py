@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure-7kn9#=clz=0)xceg7w5!zqmd-y6n+&eu8vnupeyo1eu)q1g1-_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [ "carmoto.onrender.com",
+    "localhost",
+    "127.0.0.1"]
 
 
 # Application definition
@@ -49,6 +51,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+
 ]
 
 ROOT_URLCONF = 'carrental.urls'
@@ -121,6 +125,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # For production use with collectstatic
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
