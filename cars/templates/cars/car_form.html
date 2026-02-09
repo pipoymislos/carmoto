@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if form.instance.pk %}Edit Car{% else %}Add New Car{% endif %} - Admin</title>
+    <style>
+        /* Add enctype to form tag in the HTML */
+    </style>
+</head>
+<body>
+    <!-- In the form tag, add enctype -->
+    <form method="POST" enctype="multipart/form-data" class="car-form">
+        {% csrf_token %}
+        
+        <!-- Form fields will include image field now -->
+        {{ form.as_p }}
+        
+        <button type="submit">Save Car</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Car - Confirmation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .delete-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 480px;
+            overflow: hidden;
+            text-align: center;
+        }
+        
+        .delete-header {
+            background: linear-gradient(to right, #ff6b6b, #ff8e8e);
+            color: white;
+            padding: 30px 20px;
+        }
+        
+        .delete-header h2 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .delete-header .warning-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .delete-content {
+            padding: 30px;
+        }
+        
+        .delete-message {
+            margin-bottom: 25px;
+            font-size: 18px;
+            color: #333;
+            line-height: 1.5;
+        }
+        
+        .car-name {
+            font-weight: 600;
+            color: #ff6b6b;
+            font-size: 20px;
+            margin: 10px 0;
+            padding: 8px 15px;
+            background-color: #fff5f5;
+            border-radius: 6px;
+            display: inline-block;
+        }
+        
+        .warning-note {
+            background-color: #fff5f5;
+            border-left: 4px solid #ff6b6b;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+            border-radius: 0 6px 6px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-delete {
+            background: linear-gradient(to right, #ff6b6b, #ff8e8e);
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        .btn-cancel {
+            background: #f1f3f5;
+            color: #495057;
+            border: 1px solid #dee2e6;
+        }
+        
+        .btn-cancel:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-icon {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        @media (max-width: 480px) {
+            .delete-container {
+                max-width: 100%;
+            }
+            
+            .delete-content {
+                padding: 20px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="delete-container">
+        <div class="delete-header">
+            <div class="warning-icon">⚠️</div>
+            <h2>Delete Car</h2>
+        </div>
+        
+        <div class="delete-content">
+            <p class="delete-message">Are you sure you want to delete this car?</p>
+            
+            <div class="car-name">{{ car }}</div>
+            
+            <div class="warning-note">
+                <strong>Note:</strong> This action cannot be undone. All data associated with this car will be permanently removed from the system.
+            </div>
+            
+            <form method="POST" style="margin-bottom: 0;">
+                {% csrf_token %}
+                <div class="button-group">
+                    <button type="submit" class="btn btn-delete">
+                        <span class="btn-icon">🗑️</span> Yes, Delete
+                    </button>
+                    <a href="{% url 'car_list' %}" class="btn btn-cancel">
+                        <span class="btn-icon">↩️</span> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

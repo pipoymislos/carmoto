@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Premium Car Rental</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Keep all your existing CSS styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #1a2980;
+            --secondary: #26d0ce;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .main-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo i {
+            font-size: 32px;
+        }
+        
+        .logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+        }
+        
+        .logo p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .user-greeting {
+            text-align: right;
+        }
+        
+        .user-greeting h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .user-greeting p {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        /* Main Content */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 30px;
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .page-header h2 {
+            font-size: 36px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .page-header p {
+            font-size: 18px;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            border-color: var(--secondary);
+        }
+        
+        .stat-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 24px;
+        }
+        
+        .stat-number {
+            font-size: 42px;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 15px 0;
+            line-height: 1;
+        }
+        
+        .stat-title {
+            font-size: 18px;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+        
+        .stat-subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* Content Sections */
+        .content-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--light);
+        }
+        
+        .section-title h3 {
+            color: var(--primary);
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-view-all {
+            background: var(--light);
+            color: var(--dark);
+            padding: 8px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            text-align: left;
+            padding: 15px;
+            background: var(--light);
+            color: var(--dark);
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+        
+        .data-table tr:hover {
+            background: #f9f9f9;
+        }
+        
+        /* Car Image */
+        .car-image-cell img {
+            width: 80px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+        
+        .car-image-placeholder {
+            width: 80px;
+            height: 60px;
+            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+        }
+        
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-available { background: #d4edda; color: #155724; }
+        .status-unavailable { background: #f8d7da; color: #721c24; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-approved { background: #d1ecf1; color: #0c5460; }
+        .status-rejected { background: #f8d7da; color: #721c24; }
+        .status-completed { background: #e2e3e5; color: #383d41; }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .btn-action {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        
+        .btn-action:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        
+        .btn-edit { background: var(--primary); }
+        .btn-delete { background: var(--danger); }
+        .btn-view { background: var(--secondary); }
+        .btn-approve { background: var(--success); }
+        .btn-reject { background: var(--danger); }
+        
+        /* Messages */
+        .messages {
+            margin-bottom: 20px;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .empty-state i {
+            font-size: 64px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .empty-state h3 {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        /* Admin Actions */
+        .admin-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #eee;
+        }
+        
+        .admin-action-card {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 10px;
+            flex: 1;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .admin-action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        /* Footer */
+        .main-footer {
+            background: var(--dark);
+            color: white;
+            padding: 40px 0;
+            margin-top: 60px;
+        }
+        
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+        
+        .footer-col h4 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: var(--secondary);
+        }
+        
+        .footer-col p {
+            color: #aaa;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .social-links a:hover {
+            background: var(--secondary);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #aaa;
+            font-size: 14px;
+        }
+        
+        /* Links */
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .clickable {
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .user-greeting {
+                text-align: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .data-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .admin-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-car"></i>
+                <div>
+                    <h1>Premium Car Rental</h1>
+                    <p>Admin Dashboard</p>
+                </div>
+            </div>
+            
+            <div class="user-menu">
+                <div class="user-greeting">
+                    <h3>Welcome, {{ request.user.username }}!</h3>
+                    <p>Administrator • {{ current_date }}</p>
+                </div>
+                
+                <div class="nav-buttons">
+                    <a href="{% url 'admin_logout' %}" class="btn btn-primary">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Messages -->
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <div class="page-header">
+            <h2>Admin Dashboard</h2>
+            <p>Monitor and manage your car rental operations efficiently</p>
+        </div>
+        
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card clickable" onclick="window.location.href='{% url 'car_list' %}'">
+                <div class="stat-icon">
+                    <i class="fas fa-car"></i>
+                </div>
+                <div class="stat-number">{{ total_cars }}</div>
+                <div class="stat-title">Total Cars</div>
+                <div class="stat-subtitle">{{ available_cars }} available</div>
+            </div>
+            
+            <div class="stat-card clickable" onclick="window.location.href='{% url 'all_reservations' %}'">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-number">{{ total_reservations }}</div>
+                <div class="stat-title">Total Reservations</div>
+                <div class="stat-subtitle">{{ pending_reservations }} pending</div>
+            </div>
+            
+            <div class="stat-card clickable" onclick="window.location.href='{% url 'all_reservations' %}?status=approved'">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-number">{{ approved_reservations }}</div>
+                <div class="stat-title">Approved</div>
+                <div class="stat-subtitle">Reservations</div>
+            </div>
+            
+            <div class="stat-card clickable" onclick="window.location.href='#'">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-number">{{ total_users|default:"0" }}</div>
+                <div class="stat-title">Total Users</div>
+                <div class="stat-subtitle">Registered customers</div>
+            </div>
+        </div>
+        
+        <!-- Recent Cars Section -->
+        <div class="content-section">
+            <div class="section-title">
+                <h3><i class="fas fa-car"></i> Recent Cars</h3>
+                <a href="{% url 'add_car' %}" class="btn-view-all clickable">
+                    <i class="fas fa-plus"></i> Add New Car
+                </a>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Car</th>
+                            <th>Brand</th>
+                            <th>Model</th>
+                            <th>Price/Day</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for car in cars %}
+                        <tr>
+                            <td class="car-image-cell">
+                                {% if car.image %}
+                                    <img src="{{ car.image.url }}" alt="{{ car.brand }} {{ car.name }}" class="clickable" onclick="window.location.href='{% url 'edit_car' car.id %}'">
+                                {% else %}
+                                    <div class="car-image-placeholder clickable" onclick="window.location.href='{% url 'edit_car' car.id %}'">
+                                        <i class="fas fa-car"></i>
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td>{{ car.brand }}</td>
+                            <td>{{ car.name }}</td>
+                            <td><strong>₱{{ car.price_per_day }}</strong></td>
+                            <td>
+                                <span class="status-badge {% if car.is_available %}status-available{% else %}status-unavailable{% endif %}" 
+                                      onclick="toggleCarStatus({{ car.id }})">
+                                    {% if car.is_available %}Available{% else %}Unavailable{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="{% url 'edit_car' car.id %}" class="btn-action btn-edit">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <!-- CHANGED: Use the new delete_car URL -->
+                                    <form method="POST" action="{% url 'delete_car' car.id %}" style="display: inline;" 
+                                          onsubmit="return confirm('Are you sure you want to delete {{ car.brand }} {{ car.name }}?')">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn-action btn-delete">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <i class="fas fa-car"></i>
+                                    <h3>No cars available</h3>
+                                    <p>Add your first car to get started</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Recent Reservations Section -->
+        <div class="content-section">
+            <div class="section-title">
+                <h3><i class="fas fa-calendar-check"></i> Recent Reservations</h3>
+                <a href="{% url 'all_reservations' %}" class="btn-view-all">View All Reservations</a>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Customer</th>
+                            <th>Car</th>
+                            <th>Dates</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reservation in reservations %}
+                        <tr>
+                            <td><strong>#{{ reservation.id }}</strong></td>
+                            <td>{{ reservation.customer.username }}</td>
+                            <td>{{ reservation.car.brand }} {{ reservation.car.name }}</td>
+                            <td>{{ reservation.start_date|date:"M d" }} - {{ reservation.end_date|date:"M d, Y" }}</td>
+                            <td><strong>₱{{ reservation.total_amount }}</strong></td>
+                            <td>
+                                <span class="status-badge status-{{ reservation.status }}">
+                                    {{ reservation.status|title }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    {% if reservation.status == 'pending' %}
+                                    <form method="POST" action="{% url 'approve_reservation' reservation.id %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn-action btn-approve">
+                                            <i class="fas fa-check"></i> Approve
+                                        </button>
+                                    </form>
+                                    <form method="POST" action="{% url 'reject_reservation' reservation.id %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn-action btn-reject">
+                                            <i class="fas fa-times"></i> Reject
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                    <a href="{% url 'view_reservation' reservation.id %}" class="btn-action btn-view">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7">
+                                <div class="empty-state">
+                                    <i class="fas fa-calendar"></i>
+                                    <h3>No reservations yet</h3>
+                                    <p>All reservations will appear here</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="admin-actions">
+            <div class="admin-action-card clickable" onclick="window.location.href='{% url 'add_car' %}'">
+                <h4><i class="fas fa-plus-circle"></i> Add New Car</h4>
+                <p>Add a new vehicle to your fleet</p>
+                <div style="margin-top: 10px;">
+                    <i class="fas fa-plus"></i> Add Car
+                </div>
+            </div>
+            
+            <div class="admin-action-card clickable" onclick="window.location.href='#'">
+                <h4><i class="fas fa-file-export"></i> Generate Reports</h4>
+                <p>Export monthly reports and analytics</p>
+                <div style="margin-top: 10px;">
+                    <i class="fas fa-download"></i> Download
+                </div>
+            </div>
+            
+            <div class="admin-action-card clickable" onclick="window.location.href='#'">
+                <h4><i class="fas fa-users-cog"></i> User Management</h4>
+                <p>Manage user accounts and permissions</p>
+                <div style="margin-top: 10px;">
+                    <i class="fas fa-user-cog"></i> Manage
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-col">
+                <h4>Premium Car Rental Admin</h4>
+                <p>Management dashboard for monitoring and controlling car rental operations.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Admin Links</h4>
+                <p><a href="{% url 'car_list' %}" style="color: #aaa;">Manage Cars</a></p>
+                <p><a href="{% url 'all_reservations' %}" style="color: #aaa;">View Reservations</a></p>
+                <p><a href="#" style="color: #aaa;">User Management</a></p>
+                <p><a href="#" style="color: #aaa;">System Settings</a></p>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Support</h4>
+                <p><i class="fas fa-envelope"></i> <a href="mailto:admin@premiumcarrental.com" style="color: #aaa;">admin@premiumcarrental.com</a></p>
+                <p><i class="fas fa-phone"></i> <a href="tel:+63281234567" style="color: #aaa;">(02) 8123-4567 ext. 100</a></p>
+                <p><i class="fas fa-shield-alt"></i> Secure Admin Portal</p>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            &copy; 2024 Premium Car Rental Admin Dashboard. All rights reserved. | v2.1.0
+        </div>
+    </footer>
+    
+    <script>
+        // Function to toggle car status
+        function toggleCarStatus(carId) {
+            if (confirm('Are you sure you want to change the car status?')) {
+                // Create a form to submit
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/admin/toggle-car-status/${carId}/`;
+                
+                // Add CSRF token
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'csrfmiddlewaretoken';
+                csrfInput.value = csrfToken;
+                form.appendChild(csrfInput);
+                
+                // Submit the form
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+        
+        // Function to get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        // Add cursor pointer to all clickable elements
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.clickable').forEach(element => {
+                element.style.cursor = 'pointer';
+            });
+        });
+    </script>
+</body>
+</html>

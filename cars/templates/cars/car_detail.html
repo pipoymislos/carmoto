@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ car.brand }} {{ car.name }} - Premium Car Rental</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #1a2980;
+            --secondary: #26d0ce;
+            --light: #f8f9fa;
+            --dark: #343a40;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .main-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo i {
+            font-size: 32px;
+        }
+        
+        .logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .logo p {
+            font-size: 14px;
+            opacity: 0.9;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .user-greeting {
+            text-align: right;
+            color: white;
+        }
+        
+        .user-greeting h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+            color: white;
+        }
+        
+        .user-greeting p {
+            font-size: 13px;
+            opacity: 0.8;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .btn-book {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 12px 30px;
+            font-size: 16px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .back-link {
+            margin-bottom: 30px;
+        }
+        
+        .back-link a {
+            color: var(--primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+        
+        /* Car Detail */
+        .car-detail-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        
+        .car-images {
+            position: relative;
+            height: 400px;
+            overflow: hidden;
+        }
+        
+        .car-images img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .car-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.9);
+            color: var(--primary);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        
+        .car-content {
+            padding: 40px;
+        }
+        
+        .car-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--light);
+        }
+        
+        .car-title h2 {
+            font-size: 32px;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+        
+        .car-brand {
+            font-size: 16px;
+            color: var(--primary);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        .car-price {
+            text-align: right;
+        }
+        
+        .price-day {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+        
+        .price-label {
+            font-size: 14px;
+            color: #999;
+        }
+        
+        .car-specs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .spec-card {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .spec-icon {
+            font-size: 24px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .spec-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .spec-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .car-description {
+            margin-bottom: 40px;
+        }
+        
+        .car-description h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .car-description p {
+            color: #666;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        
+        .availability {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .available {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .unavailable {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .car-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        /* Footer */
+        .main-footer {
+            background: var(--dark);
+            color: white;
+            padding: 40px 0;
+            margin-top: 60px;
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+        
+        .footer-col h4 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: var(--secondary);
+        }
+        
+        .footer-col p {
+            color: #aaa;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .social-links a:hover {
+            background: var(--secondary);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #aaa;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .user-greeting {
+                text-align: center;
+            }
+            
+            .car-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .car-price {
+                text-align: left;
+            }
+            
+            .car-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-car"></i>
+                <div>
+                    <h1>Premium Car Rental</h1>
+                    <p>Luxury & Comfort on Wheels</p>
+                </div>
+            </div>
+            
+            <div class="user-menu">
+                <div class="user-greeting">
+                    <h3>Welcome, {{ user.username }}!</h3>
+                    <p>Ready for your next journey?</p>
+                </div>
+                
+                <div class="nav-buttons">
+                    <a href="{% url 'car_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-car"></i> Browse Cars
+                    </a>
+                    <a href="{% url 'admin_logout' %}" class="btn btn-primary">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="container">
+        <div class="back-link">
+            <a href="{% url 'car_list' %}">
+                <i class="fas fa-arrow-left"></i> Back to Available Cars
+            </a>
+        </div>
+        
+        <div class="car-detail-card">
+            <div class="car-images">
+                {% if car.image %}
+                    <img src="{{ car.image.url }}" alt="{{ car.brand }} {{ car.name }}">
+                {% else %}
+                    <div style="height:100%;background:linear-gradient(45deg, var(--primary), var(--secondary));display:flex;align-items:center;justify-content:center;color:white;">
+                        <i class="fas fa-car" style="font-size: 120px;"></i>
+                    </div>
+                {% endif %}
+                <div class="car-badge">
+                    {{ car.get_transmission_display }}
+                </div>
+            </div>
+            
+            <div class="car-content">
+                <div class="car-header">
+                    <div class="car-title">
+                        <div class="car-brand">{{ car.brand }}</div>
+                        <h2>{{ car.name }}</h2>
+                    </div>
+                    <div class="car-price">
+                        <div class="price-day">₱{{ car.price_per_day }}</div>
+                        <div class="price-label">per day</div>
+                    </div>
+                </div>
+                
+                <div class="car-specs">
+                    <div class="spec-card">
+                        <div class="spec-icon">
+                            <i class="fas fa-gas-pump"></i>
+                        </div>
+                        <div class="spec-label">Fuel Type</div>
+                        <div class="spec-value">{{ car.get_fuel_type_display }}</div>
+                    </div>
+                    
+                    <div class="spec-card">
+                        <div class="spec-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="spec-label">Seats</div>
+                        <div class="spec-value">{{ car.seats }} persons</div>
+                    </div>
+                    
+                    <div class="spec-card">
+                        <div class="spec-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="spec-label">Transmission</div>
+                        <div class="spec-value">{{ car.get_transmission_display }}</div>
+                    </div>
+                    
+                    <div class="spec-card">
+                        <div class="spec-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="spec-label">Added</div>
+                        <div class="spec-value">{{ car.created_at|date:"M d, Y" }}</div>
+                    </div>
+                </div>
+                
+                <div class="availability {% if car.is_available %}available{% else %}unavailable{% endif %}">
+                    <i class="fas fa-{% if car.is_available %}check-circle{% else %}times-circle{% endif %}"></i>
+                    <div>
+                        <strong>{% if car.is_available %}Available{% else %}Currently Unavailable{% endif %}</strong>
+                        {% if car.is_available %}
+                            <p>This car is ready for booking!</p>
+                        {% else %}
+                            <p>This car is not available for booking at the moment.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="car-description">
+                    <h3>About This Car</h3>
+                    {% if car.description %}
+                        <p>{{ car.description|linebreaks }}</p>
+                    {% else %}
+                        <p>This premium {{ car.brand }} {{ car.name }} offers exceptional comfort and performance for your journey. Featuring {{ car.get_transmission_display }} transmission and {{ car.get_fuel_type_display }} fuel efficiency, it's perfect for both city driving and long road trips. With seating for {{ car.seats }} passengers, everyone can travel in comfort.</p>
+                        
+                        <p style="margin-top: 15px;">Key features include:</p>
+                        <ul style="margin-top: 10px; padding-left: 20px; color: #666;">
+                            <li>Premium interior with comfortable seating</li>
+                            <li>Advanced safety features</li>
+                            <li>Excellent fuel efficiency</li>
+                            <li>Modern infotainment system</li>
+                            <li>Spacious luggage capacity</li>
+                        </ul>
+                    {% endif %}
+                </div>
+                
+                <div class="car-actions">
+                    {% if car.is_available %}
+                        <a href="{% url 'book_car' car.id %}" class="btn btn-book">
+                            <i class="fas fa-calendar-check"></i> Book Now
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'car_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-car"></i> Browse More Cars
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-col">
+                <h4>Premium Car Rental</h4>
+                <p>Providing luxury vehicles with premium service since 2010. Your comfort and safety are our top priority.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Contact Info</h4>
+                <p><i class="fas fa-map-marker-alt"></i> 123 Business Ave, Makati City, Philippines</p>
+                <p><i class="fas fa-phone"></i> (02) 8123-4567</p>
+                <p><i class="fas fa-envelope"></i> info@premiumcarrental.com</p>
+                <p><i class="fas fa-clock"></i> Mon-Sun: 24/7 Service</p>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Quick Links</h4>
+                <p><a href="{% url 'car_list' %}" style="color: #aaa; text-decoration: none;">Available Cars</a></p>
+                <p><a href="#" style="color: #aaa; text-decoration: none;">Special Offers</a></p>
+                <p><a href="#" style="color: #aaa; text-decoration: none;">FAQ</a></p>
+                <p><a href="#" style="color: #aaa; text-decoration: none;">Terms & Conditions</a></p>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            &copy; 2024 Premium Car Rental. All rights reserved.
+        </div>
+    </footer>
+</body>
+</html>

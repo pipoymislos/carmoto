@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reservation Details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #f5f7fa; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 2px solid #eee; }
+        h1 { color: #1a2980; }
+        .detail-row { display: flex; margin-bottom: 15px; }
+        .detail-label { font-weight: 600; width: 200px; color: #333; }
+        .detail-value { color: #666; }
+        .btn { display: inline-block; padding: 10px 20px; background: #1a2980; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }
+        .status-badge { padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: 600; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-approved { background: #d1ecf1; color: #0c5460; }
+        .status-rejected { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-file-invoice"></i> Reservation Details #{{ reservation.id }}</h1>
+            <a href="{% url 'all_reservations' %}" class="btn"><i class="fas fa-arrow-left"></i> Back</a>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Customer:</div>
+            <div class="detail-value">{{ reservation.customer.username }} ({{ reservation.contact_email }})</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Car:</div>
+            <div class="detail-value">{{ reservation.car.brand }} {{ reservation.car.name }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Dates:</div>
+            <div class="detail-value">{{ reservation.start_date }} to {{ reservation.end_date }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Pickup Time:</div>
+            <div class="detail-value">{{ reservation.pickup_time }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Total Amount:</div>
+            <div class="detail-value"><strong>₱{{ reservation.total_amount }}</strong></div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Status:</div>
+            <div class="detail-value">
+                <span class="status-badge status-{{ reservation.status }}">
+                    {{ reservation.status|title }}
+                </span>
+            </div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Payment Status:</div>
+            <div class="detail-value">{{ reservation.payment_status|title }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Special Requests:</div>
+            <div class="detail-value">{{ reservation.special_requests|default:"None" }}</div>
+        </div>
+        
+        <div class="detail-row">
+            <div class="detail-label">Created:</div>
+            <div class="detail-value">{{ reservation.created_at }}</div>
+        </div>
+        
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+            {% if reservation.status == 'pending' %}
+            <form method="POST" action="{% url 'approve_reservation' reservation.id %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn" style="background: #28a745;">
+                    <i class="fas fa-check"></i> Approve
+                </button>
+            </form>
+            <form method="POST" action="{% url 'reject_reservation' reservation.id %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn" style="background: #dc3545;">
+                    <i class="fas fa-times"></i> Reject
+                </button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
