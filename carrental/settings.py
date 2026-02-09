@@ -28,7 +28,8 @@ DEBUG = True
 
 
 
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost').split(',')
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "carmoto.onrender.com"]
+
 
 
 
