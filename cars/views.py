@@ -5,11 +5,23 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.utils import timezone
 from datetime import date, datetime
+from django.db.models import Sum, Q
+from django.http import HttpResponse, FileResponse, JsonResponse
+from django.template.loader import get_template
+from django.conf import settings
+from io import BytesIO
 from .models import Car, Reservation, User
 from .forms import CarForm, RegisterForm, ReservationForm
 import json
 from django.core import serializers
-from django.http import JsonResponse, HttpResponse
+
+# Try to import xhtml2pdf, but handle gracefully if not installed
+try:
+    from xhtml2pdf import pisa
+    PDF_SUPPORT = True
+except ImportError:
+    PDF_SUPPORT = False
+    print("Warning: xhtml2pdf not installed. Receipt downloads will be disabled.")
 
 # --- Authentication ---
 def register_view(request):
@@ -56,7 +68,14 @@ def admin_dashboard(request):
     total_reservations = Reservation.objects.count()
     pending_reservations = Reservation.objects.filter(status='pending').count()
     approved_reservations = Reservation.objects.filter(status='approved').count()
+    completed_reservations = Reservation.objects.filter(status='completed').count()
+    cancelled_reservations = Reservation.objects.filter(status='cancelled').count()
     total_users = User.objects.filter(is_staff=False).count()
+    
+    # Revenue statistics
+    total_revenue = Reservation.objects.filter(
+        Q(status='approved') | Q(status='completed')
+    ).aggregate(total=Sum('total_amount'))['total'] or 0
     
     print(f"Stats - Cars: {total_cars}, Available: {available_cars}")
     print(f"Stats - Reservations: {total_reservations}, Pending: {pending_reservations}")
@@ -82,6 +101,9 @@ def admin_dashboard(request):
         'total_reservations': total_reservations,
         'pending_reservations': pending_reservations,
         'approved_reservations': approved_reservations,
+        'completed_reservations': completed_reservations,
+        'cancelled_reservations': cancelled_reservations,
+        'total_revenue': total_revenue,
         'total_users': total_users,
         'current_date': datetime.now().strftime("%B %d, %Y"),
     }
@@ -165,7 +187,14 @@ def delete_car_admin(request, car_id):
 @staff_member_required
 def view_reservation(request, reservation_id):
     reservation = get_object_or_404(Reservation, id=reservation_id)
-    context = {'reservation': reservation}
+    days = (reservation.end_date - reservation.start_date).days
+    subtotal = reservation.car.price_per_day * days
+    
+    context = {
+        'reservation': reservation,
+        'days': days,
+        'subtotal': subtotal
+    }
     return render(request, 'cars/view_reservation.html', context)
 
 # --- NEW: Approve Reservation ---
@@ -212,8 +241,26 @@ def all_reservations(request):
 # --- NEW: All Cars View for Admin ---
 @staff_member_required
 def admin_car_list(request):
-    cars = Car.objects.all().order_by('-created_at')
-    context = {'cars': cars}
+    """
+    Admin view to see all cars with filtering options
+    """
+    status_filter = request.GET.get('status', '')
+    
+    if status_filter == 'available':
+        cars = Car.objects.filter(is_available=True).order_by('-created_at')
+    elif status_filter == 'unavailable':
+        cars = Car.objects.filter(is_available=False).order_by('-created_at')
+    else:
+        cars = Car.objects.all().order_by('-created_at')
+    
+    # Calculate stats
+    cars_available = Car.objects.filter(is_available=True).count()
+    
+    context = {
+        'cars': cars,
+        'cars_available': cars_available,
+        'status_filter': status_filter,
+    }
     return render(request, 'cars/admin_car_list.html', context)
 
 # --- Existing Functions (keep these) ---
@@ -248,10 +295,19 @@ def book_car(request, car_id):
             reservation = form.save(commit=False)
             reservation.car = car
             reservation.customer = request.user
+            
+            # Set default pickup/dropoff times if not provided
+            if not reservation.pickup_time:
+                reservation.pickup_time = "10:00:00"
+            if not reservation.dropoff_time:
+                reservation.dropoff_time = "10:00:00"
+            
+            # Calculate total amount
             reservation.total_amount = car.total_price(
                 reservation.start_date, 
                 reservation.end_date
             )
+            reservation.status = 'pending'  # Default status
             reservation.save()
             
             messages.success(request, 
@@ -259,11 +315,13 @@ def book_car(request, car_id):
                 f"Your reservation ID is #{reservation.id}. "
                 f"We have sent a confirmation to {reservation.contact_email}. "
                 f"Total amount: ₱{reservation.total_amount}")
-            return redirect('car_list')
+            return redirect('my_reservations')  # Redirect to my_reservations after booking
     else:
-        form = ReservationForm(initial={
+        # Pre-fill email if user has one
+        initial_data = {
             'contact_email': request.user.email if request.user.email else '',
-        })
+        }
+        form = ReservationForm(initial=initial_data)
     
     return render(request, 'cars/book_car.html', {
         'car': car,
@@ -330,14 +388,233 @@ def car_delete(request, pk):
         return redirect('car_list')
     return render(request, 'cars/car_confirm_delete.html', {'car': car})
 
-# --- User Reservations ---
+# --- ENHANCED: User Reservations with Statistics and Receipts ---
+# --- ENHANCED: User Reservations with Statistics and Receipts ---
 @login_required
 def my_reservations(request):
-    reservations = Reservation.objects.filter(customer=request.user).order_by('-created_at')
-    return render(request, 'cars/my_reservations.html', {'reservations': reservations})
+    """
+    Enhanced view for users to see all their reservations with statistics
+    """
+    reservations = Reservation.objects.filter(
+        customer=request.user
+    ).select_related('car').order_by('-created_at')
+    
+    # Calculate rental days for each reservation
+    for reservation in reservations:
+        reservation.rental_days = (reservation.end_date - reservation.start_date).days
+    
+    # Calculate statistics
+    pending_count = reservations.filter(status='pending').count()
+    approved_count = reservations.filter(status='approved').count()
+    total_count = reservations.count()
+    
+    # Calculate total spent (only approved/completed reservations)
+    total_spent = reservations.filter(
+        Q(status='approved') | Q(status='completed')
+    ).aggregate(total=Sum('total_amount'))['total'] or 0
+    
+    context = {
+        'reservations': reservations,
+        'pending_count': pending_count,
+        'approved_count': approved_count,
+        'total_count': total_count,
+        'total_spent': total_spent,
+    }
+    return render(request, 'cars/my_reservations.html', context)
+@login_required
+def reservation_detail(request, pk):
+    """
+    View reservation details for users
+    """
+    reservation = get_object_or_404(
+        Reservation, 
+        pk=pk, 
+        customer=request.user
+    )
+    
+    # Calculate days
+    days = (reservation.end_date - reservation.start_date).days
+    daily_rate = reservation.car.price_per_day
+    subtotal = daily_rate * days
+    
+    context = {
+        'reservation': reservation,
+        'days': days,
+        'daily_rate': daily_rate,
+        'subtotal': subtotal,
+        'today': date.today().isoformat(),  # Add today variable
+    }
+    return render(request, 'cars/reservation_detail.html', context)
+
+# --- NEW: User Cancel Reservation ---
+@login_required
+def cancel_reservation(request, pk):
+    """
+    Allow users to cancel their pending reservations
+    """
+    reservation = get_object_or_404(
+        Reservation, 
+        pk=pk, 
+        customer=request.user
+    )
+    
+    # Only allow cancelling pending reservations
+    if reservation.status == 'pending':
+        reservation.status = 'cancelled'
+        reservation.save()
+        messages.success(request, f'Reservation #{reservation.id} cancelled successfully.')
+    else:
+        messages.error(request, 'Only pending reservations can be cancelled.')
+    
+    return redirect('my_reservations')
+
+# --- NEW: Download Receipt for Users ---
+@login_required
+def download_receipt(request, pk):
+    """
+    Generate and download PDF receipt for approved/completed reservations
+    """
+    # Check if PDF support is available
+    if not PDF_SUPPORT:
+        messages.error(request, 'PDF generation is not available. Please install xhtml2pdf.')
+        return redirect('my_reservations')
+    
+    reservation = get_object_or_404(
+        Reservation, 
+        pk=pk, 
+        customer=request.user
+    )
+    
+    # Only allow receipt download for approved or completed reservations
+    if reservation.status not in ['approved', 'completed']:
+        messages.error(request, 'Receipt is only available for approved or completed reservations.')
+        return redirect('my_reservations')
+    
+    # Calculate rental details
+    days = (reservation.end_date - reservation.start_date).days
+    daily_rate = reservation.car.price_per_day
+    subtotal = daily_rate * days
+    
+    # Get any additional fees (if your model has these fields)
+    insurance_fee = getattr(reservation, 'insurance_fee', 0)
+    extra_fees = getattr(reservation, 'extra_fees', 0)
+    
+    # Template context
+    context = {
+        'reservation': reservation,
+        'days': days,
+        'daily_rate': daily_rate,
+        'subtotal': subtotal,
+        'insurance_fee': insurance_fee,
+        'extra_fees': extra_fees,
+        'receipt_date': timezone.now(),
+        'company_name': 'Car Moto',
+        'company_address': '21 Metro Avenue, Manila, Philippines',
+        'company_phone': '+63 (2) 8123 4567',
+        'company_email': 'fleet@carmanager.ph',
+        'company_vat': '123-456-789-000',
+        'total_amount': reservation.total_amount,
+    }
+    
+    # Render PDF
+    template = get_template('cars/receipt_pdf.html')
+    html = template.render(context)
+    result = BytesIO()
+    
+    # Create PDF
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result)
+    
+    if not pdf.err:
+        # Generate filename
+        filename = f'receipt_{reservation.id}_{reservation.customer.last_name}_{reservation.start_date.strftime("%Y%m%d")}.pdf'
+        
+        response = HttpResponse(result.getvalue(), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        return response
+    
+    messages.error(request, 'Error generating PDF receipt.')
+    return redirect('my_reservations')
+
+# --- NEW: Admin Download Receipt for Any Reservation ---
+@staff_member_required
+def admin_download_receipt(request, pk):
+    """
+    Admin version to download receipt for any reservation
+    """
+    if not PDF_SUPPORT:
+        messages.error(request, 'PDF generation is not available.')
+        return redirect('admin_dashboard')
+    
+    reservation = get_object_or_404(Reservation, pk=pk)
+    
+    # Calculate rental details
+    days = (reservation.end_date - reservation.start_date).days
+    daily_rate = reservation.car.price_per_day
+    subtotal = daily_rate * days
+    
+    context = {
+        'reservation': reservation,
+        'days': days,
+        'daily_rate': daily_rate,
+        'subtotal': subtotal,
+        'receipt_date': timezone.now(),
+        'company_name': 'Car Moto',
+        'company_address': '21 Metro Avenue, Manila, Philippines',
+        'company_phone': '+63 (2) 8123 4567',
+        'company_email': 'fleet@carmanager.ph',
+        'company_vat': '123-456-789-000',
+        'admin_download': True,
+    }
+    
+    template = get_template('cars/receipt_pdf.html')
+    html = template.render(context)
+    result = BytesIO()
+    
+    pdf = pisa.pisaDocument(BytesIO(html.encode("UTF-8")), result)
+    
+    if not pdf.err:
+        filename = f'receipt_admin_{reservation.id}_{reservation.customer.last_name}.pdf'
+        response = HttpResponse(result.getvalue(), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        return response
+    
+    messages.error(request, 'Error generating PDF receipt.')
+    return redirect('admin_dashboard')
 
 # --- Car Details ---
 @login_required
 def car_detail(request, car_id):
     car = get_object_or_404(Car, id=car_id)
     return render(request, 'cars/car_detail.html', {'car': car})
+
+# --- AJAX: Check Car Availability ---
+@login_required
+def check_availability(request):
+    """
+    AJAX endpoint to check if a car is available for given dates
+    """
+    car_id = request.GET.get('car_id')
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    
+    try:
+        car = Car.objects.get(id=car_id)
+        start = datetime.strptime(start_date, '%Y-%m-%d').date()
+        end = datetime.strptime(end_date, '%Y-%m-%d').date()
+        
+        # Check for conflicting reservations
+        conflicting = Reservation.objects.filter(
+            car=car,
+            status__in=['pending', 'approved'],
+            start_date__lte=end,
+            end_date__gte=start
+        ).exists()
+        
+        return JsonResponse({
+            'available': not conflicting,
+            'price_per_day': float(car.price_per_day),
+            'total_days': (end - start).days,
+            'total_price': float(car.total_price(start, end))
+        })
+    except (Car.DoesNotExist, ValueError):
+        return JsonResponse({'error': 'Invalid parameters'}, status=400)

@@ -3,209 +3,398 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Account - Car Management System</title>
+    <title>Create Account · Car Management</title>
+    <!-- 
+        REDESIGN – Registration 
+        Complete visual overhaul. Zero helptext, zero password guides.
+        All Django functionality preserved: form loop, CSRF, error display, url 'login'.
+        Clean, confident, deploy‑ready. No emoji, no clutter.
+    -->
     <style>
+        /* ----- RESET / MODERN SYSTEM STACK --------------------------------- */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            background: #eef2f4;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             display: flex;
-            justify-content: center;
             align-items: center;
-            padding: 20px;
-        }
-        
-        .register-container {
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 480px;
-            overflow: hidden;
-        }
-        
-        .register-header {
-            background: linear-gradient(to right, #667eea, #764ba2);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-        }
-        
-        .register-header h2 {
-            font-size: 28px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        
-        .register-header p {
-            opacity: 0.9;
-            font-size: 15px;
-        }
-        
-        .register-form {
-            padding: 30px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1.75rem;
+            color: #1d3c45;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
             position: relative;
         }
-        
+
+        /* soft light – no emoji, no pattern, only atmospheric gradient */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 35%, rgba(210, 230, 238, 0.35) 0%, transparent 42%),
+                radial-gradient(circle at 88% 68%, rgba(180, 210, 221, 0.28) 0%, transparent 46%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ----- MAIN CARD – lighter, elevated, refined ---------------------- */
+        .register-card {
+            max-width: 528px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            background: #ffffff;
+            border-radius: 40px;
+            box-shadow: 
+                0 12px 28px -16px rgba(0, 55, 68, 0.08),
+                0 4px 12px -6px rgba(0, 45, 55, 0.02),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(213, 233, 240, 0.5);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.2, 1);
+            position: relative;
+            z-index: 2;
+        }
+
+        .register-card:hover {
+            border-color: rgba(167, 199, 211, 0.6);
+            box-shadow: 
+                0 28px 44px -20px rgba(32, 94, 108, 0.12),
+                0 8px 18px -10px rgba(28, 88, 100, 0.04),
+                inset 0 0 0 1px rgba(255,255,255,0.9);
+            transform: translateY(-3px);
+        }
+
+        /* header – clean separation, calm gradient, pure typography */
+        .register-header {
+            padding: 2.4rem 2.5rem 1.8rem;
+            background: linear-gradient(98deg, #f5fafc 0%, #eaf2f5 100%);
+            border-top-left-radius: 40px;
+            border-top-right-radius: 40px;
+            border-bottom: 1px solid rgba(151, 188, 199, 0.17);
+        }
+
+        .register-header h2 {
+            font-size: 2.1rem;
+            font-weight: 530;
+            letter-spacing: -0.024em;
+            color: #0e414d;
+            margin-bottom: 0.3rem;
+            line-height: 1.1;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.4);
+        }
+
+        .register-header p {
+            font-size: 0.9rem;
+            color: #446a75;
+            font-weight: 370;
+            padding-left: 1.1rem;
+            border-left: 3px solid #9ac5cf;
+            margin-top: 0.25rem;
+            opacity: 0.8;
+            letter-spacing: 0.016em;
+        }
+
+        /* form container – spacious, airy */
+        .register-form {
+            padding: 2.6rem 2.5rem 2.6rem;
+        }
+
+        /* each field group – perfect vertical rhythm */
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
         .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #333;
-            font-size: 14px;
+            display: flex;
+            align-items: center;
+            font-size: 0.7rem;
+            font-weight: 630;
+            color: #1f616e;
+            margin-bottom: 0.4rem;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            word-spacing: 0.03em;
+            transition: color 0.2s;
         }
-        
-        .form-control {
+
+        .form-group input {
             width: 100%;
-            padding: 14px 16px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s;
+            padding: 1rem 1.4rem;
+            font-size: 0.9375rem;
+            background: #ffffff;
+            border: 1.8px solid #e6f0f3;
+            border-radius: 56px;
+            color: #16424b;
+            font-weight: 410;
+            transition: all 0.24s ease;
+            box-shadow: inset 0 2px 4px rgba(0, 45, 55, 0.01);
         }
-        
-        .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+
+        .form-group input::placeholder {
+            color: #aecbd3;
+            font-weight: 330;
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+
+        .form-group input:hover {
+            border-color: #b7d6df;
+            background: #fefefe;
+            box-shadow: inset 0 2px 5px rgba(0,55,65,0.01);
+        }
+
+        .form-group input:focus {
             outline: none;
+            border-color: #1a727f;
+            background: #ffffff;
+            box-shadow: 0 0 0 5px rgba(49, 135, 148, 0.06), inset 0 1px 6px rgba(0,0,0,0.005);
         }
-        
-        .form-icon {
-            position: absolute;
-            right: 15px;
-            top: 40px;
-            color: #999;
+
+        .form-group:focus-within label {
+            color: #1d7988;
         }
-        
+
+        /* ----- ERROR PRESENTATION – soft, refined, human ------------------- */
+        .errorlist {
+            list-style: none;
+            margin-top: 0.55rem;
+            padding-left: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .errorlist div, .errorlist li {
+            background: #fff6f3;
+            border-left: 5px solid #ca8a7a;
+            border-radius: 14px;
+            padding: 0.7rem 1.2rem;
+            font-size: 0.8rem;
+            color: #784f44;
+            font-weight: 470;
+            letter-spacing: 0.006em;
+            box-shadow: 0 2px 6px rgba(170, 100, 80, 0.04);
+            backdrop-filter: blur(2px);
+        }
+
+        /* ----- ABSOLUTE HELPTEXT SUPPRESSION – no guides, no rules --------- */
+        .helptext, 
+        .form-help-text, 
+        [class*="help"], 
+        ul:not(.errorlist), 
+        .register-form p br,
+        .register-form p small,
+        .register-form p .note,
+        .register-form .field-help,
+        .register-form .password-requirements,
+        .register-form .password-hint,
+        .register-form .requirements,
+        .register-form ul:not(.errorlist) {
+            display: none !important;
+        }
+
+        /* hide any Django-generated help list inside form p */
+        .register-form p ul:not(.errorlist),
+        .register-form p .helptext,
+        .register-form p + ul,
+        .register-form p small,
+        .register-form .help-block {
+            display: none !important;
+        }
+
+        /* primary action – calm, confident, tactile */
         .btn {
-            display: block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(to right, #667eea, #764ba2);
+            padding: 1.05rem 1.75rem;
+            margin-top: 0.75rem;
+            background: linear-gradient(135deg, #1c5f6b, #16515c);
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
+            border-radius: 60px;
+            font-size: 0.9375rem;
+            font-weight: 550;
+            letter-spacing: 0.036em;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.08);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            box-shadow: 
+                0 8px 18px -10px rgba(24, 97, 110, 0.3),
+                0 2px 6px rgba(0, 40, 50, 0.02),
+                inset 0 1px 2px rgba(255,255,255,0.1);
+            backdrop-filter: blur(4px);
         }
-        
+
         .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #207280, #1b606c);
+            transform: scale(1.02) translateY(-2px);
+            box-shadow: 
+                0 22px 32px -18px rgba(30, 109, 121, 0.4),
+                0 6px 14px -8px rgba(24, 88, 98, 0.28),
+                inset 0 1px 2px rgba(255,255,255,0.2);
+            border-color: rgba(255, 255, 255, 0.35);
         }
-        
+
+        .btn:active {
+            transform: translateY(2px) scale(0.99);
+            background: linear-gradient(135deg, #15535f, #114a54);
+            box-shadow: 0 6px 10px -8px rgba(27, 93, 103, 0.5), inset 0 3px 6px rgba(0,0,0,0.04);
+            transition: 0.04s;
+        }
+
+        /* footer link – understated elegance */
         .login-link {
             text-align: center;
-            margin-top: 25px;
-            font-size: 15px;
-            color: #666;
+            margin-top: 2.4rem;
+            font-size: 0.88rem;
+            color: #547b86;
+            border-top: 1.2px solid rgba(188, 214, 223, 0.5);
+            padding-top: 1.9rem;
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
-        
+
+        .login-link span {
+            color: #4e737f;
+            font-weight: 380;
+        }
+
         .login-link a {
-            color: #667eea;
+            color: #14707d;
             text-decoration: none;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-        
-        .login-link a:hover {
-            color: #764ba2;
-            text-decoration: underline;
-        }
-        
-        /* Django form styling */
-        .register-form p {
-            margin-bottom: 20px;
+            font-weight: 600;
+            border-bottom: 2px solid transparent;
+            transition: border 0.2s, color 0.2s, padding 0.2s;
+            padding-bottom: 0.15rem;
+            letter-spacing: 0.006em;
             position: relative;
         }
-        
-        .register-form p label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #333;
-            font-size: 14px;
+
+        .login-link a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background: #17929e;
+            transition: width 0.3s ease;
         }
-        
-        .register-form p input {
+
+        .login-link a:hover {
+            color: #0e5c66;
+            border-bottom-color: transparent;
+        }
+
+        .login-link a:hover::after {
             width: 100%;
-            padding: 14px 16px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s;
         }
-        
-        .register-form p input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-            outline: none;
-        }
-        
-        .register-form .errorlist {
-            color: #e74c3c;
-            font-size: 14px;
-            margin-top: 5px;
-            list-style-type: none;
-            padding-left: 0;
-        }
-        
-        .register-form .errorlist li {
-            background-color: #ffeaea;
-            padding: 8px 12px;
-            border-radius: 4px;
-            margin-bottom: 5px;
-            border-left: 3px solid #e74c3c;
-        }
-        
-        .form-help-text {
-            font-size: 13px;
-            color: #666;
-            margin-top: 5px;
-        }
-        
-        @media (max-width: 480px) {
-            .register-container {
-                max-width: 100%;
+
+        /* responsive, mobile */
+        @media (max-width: 560px) {
+            .register-card {
+                border-radius: 32px;
             }
-            
+            .register-header {
+                padding: 1.9rem 1.8rem;
+            }
             .register-form {
-                padding: 20px;
+                padding: 2rem 1.8rem 2.2rem;
             }
+            .register-header h2 {
+                font-size: 1.9rem;
+            }
+            body {
+                padding: 1rem;
+                background: #f6fbfd;
+            }
+        }
+
+        /* selection, focus – accessible */
+        ::selection {
+            background-color: rgba(45, 132, 143, 0.12);
+            color: #09313a;
+        }
+
+        :focus-visible {
+            outline: 3px solid rgba(31, 122, 133, 0.22);
+            outline-offset: 3px;
+            border-radius: 30px;
+        }
+
+        /* remove spin */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* disable any emoji font interference */
+        input, button, label, p, h2, div, a, span {
+            font-variant-emoji: none;
+        }
+
+        /* smooth entrance */
+        @keyframes slideUp {
+            0% { opacity: 0.95; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .register-card {
+            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.2, 1);
+        }
+
+        /* additional suppression for any stray django help */
+        .register-form p .helptext,
+        .register-form .helptext,
+        .register-form p br {
+            display: none !important;
+        }
+
+        /* fields when they have content — subtle */
+        .form-group input:not(:placeholder-shown) {
+            border-color: #cbe2e8;
+            background: #fdfdfe;
         }
     </style>
 </head>
 <body>
-    <div class="register-container">
+    <div class="register-card">
         <div class="register-header">
-            <h2>Create Account</h2>
-            <p>Join our car management system</p>
+            <h2>Create account</h2>
+            <p>Join the car moto platform</p>
         </div>
         
         <form method="POST" class="register-form">
             {% csrf_token %}
-            
+
+            <!-- 
+                ABSOLUTELY CLEAN – no help text, no password rules, no guides.
+                All Django field helptext is hidden by CSS (multiple selectors).
+                Only labels, inputs, and non‑field / field errors appear.
+            -->
+
             {% for field in form %}
                 <div class="form-group">
                     {{ field.label_tag }}
                     {{ field }}
-                    
-                    {% if field.help_text %}
-                        <div class="form-help-text">{{ field.help_text }}</div>
-                    {% endif %}
-                    
+
                     {% if field.errors %}
                         <div class="errorlist">
                             {% for error in field.errors %}
@@ -215,13 +404,18 @@
                     {% endif %}
                 </div>
             {% endfor %}
-            
-            <button type="submit" class="btn">Sign Up</button>
-            
+
+            <button type="submit" class="btn">
+                Sign up
+            </button>
+
             <div class="login-link">
-                Already have an account? <a href="{% url 'login' %}">Login here</a>
+                <span>Already have an account?</span>
+                <a href="{% url 'login' %}">Sign in</a>
             </div>
         </form>
     </div>
+
+    <!-- no extra markup – minimal, elegant, functional -->
 </body>
 </html>

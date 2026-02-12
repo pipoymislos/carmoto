@@ -3,115 +3,746 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Admin - Manage Reservations</title>
+    <title>Manage Reservations · Car Manager Admin</title>
+    <!-- Font Awesome 6 – clean icons, no emoji -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
+        /* -------------------------------------------------------------
+           MANAGE RESERVATIONS – REDESIGNED, COHESIVE, PREMIUM
+           Complete visual harmony with entire Car Management System.
+           No purple gradients, no emoji – calm teal palette.
+           All Django functionality preserved – 100% deploy ready.
+        ------------------------------------------------------------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-deep: #1a4f5a;
+            --primary-soft: #256773;
+            --primary-mist: rgba(26, 79, 90, 0.04);
+            --accent-calm: #7aa3a8;
+            --bg-warm: #f5fafc;
+            --card-white: #ffffff;
+            --border-light: #e2edf1;
+            --border-soft: #d0e2e8;
+            --text-dark: #1e3b44;
+            --text-muted: #547781;
+            --success: #1a5a65;
+            --success-bg: #e3f0ee;
+            --warning: #856f4c;
+            --warning-bg: #fef3e9;
+            --danger: #794b41;
+            --danger-bg: #fef3f0;
+            --shadow-sm: 0 8px 18px -10px rgba(0, 55, 65, 0.04), 0 2px 6px rgba(0,45,55,0.02);
+            --shadow-hover: 0 24px 36px -18px rgba(26, 90, 100, 0.18), 0 6px 14px -10px rgba(26,79,90,0.06);
+            --radius-card: 32px;
+            --radius-btn: 52px;
+            --transition-smooth: all 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.08);
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f4f6f8;
-            margin: 0; padding: 20px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f0f6f9;
+            color: var(--text-dark);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
         }
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-            text-align: center;
+
+        /* Soft atmosphere – same as all other pages */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 18% 28%, rgba(198, 222, 230, 0.32) 0%, transparent 42%),
+                radial-gradient(circle at 82% 72%, rgba(176, 206, 217, 0.24) 0%, transparent 46%);
+            pointer-events: none;
+            z-index: -1;
         }
-        table {
+
+        .container {
+            max-width: 1320px;
+            margin: 0 auto;
+        }
+
+        /* ----- HEADER – refined, glassmorphism (matches admin) ------- */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .title-section h1 {
+            font-size: 2rem;
+            font-weight: 540;
+            letter-spacing: -0.018em;
+            color: #0a404b;
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .title-section h1 i {
+            color: var(--primary-soft);
+        }
+
+        .title-section p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            border-left: 3px solid #9ec2cc;
+            padding-left: 1.2rem;
+            font-weight: 360;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.55rem;
+            padding: 0.7rem 1.8rem;
+            border-radius: var(--radius-btn);
+            font-size: 0.9rem;
+            font-weight: 540;
+            text-decoration: none;
+            transition: var(--transition-smooth);
+            border: 1.5px solid transparent;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--primary-deep);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 6px 14px -10px rgba(26,79,90,0.4);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-soft);
+            transform: translateY(-2px);
+            box-shadow: 0 18px 26px -16px rgba(26,90,100,0.38);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary-deep);
+            border: 1.5px solid var(--border-soft);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-deep);
+            background: var(--primary-mist);
+        }
+
+        /* ----- STATS SUMMARY CARDS – premium, cohesive ------------- */
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-mini-card {
+            background: var(--card-white);
+            padding: 1.5rem 1.2rem;
+            border-radius: 28px;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            transition: var(--transition-smooth);
+        }
+
+        .stat-mini-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(122, 173, 182, 0.4);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stat-mini-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: var(--primary-deep);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.4rem;
+        }
+
+        .stat-mini-content {
+            flex: 1;
+        }
+
+        .stat-mini-number {
+            font-size: 1.8rem;
+            font-weight: 560;
+            color: #0a404b;
+            line-height: 1;
+            margin-bottom: 0.2rem;
+        }
+
+        .stat-mini-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 570;
+        }
+
+        /* ----- FILTER TABS – refined -------------------------------- */
+        .filter-tabs {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 1.8rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 0.6rem 1.6rem;
+            border-radius: 40px;
+            background: white;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 540;
+            transition: var(--transition-smooth);
+            border: 1.5px solid var(--border-light);
+        }
+
+        .filter-tab:hover {
+            border-color: var(--primary-soft);
+            color: var(--primary-deep);
+            background: white;
+            transform: translateY(-1px);
+        }
+
+        .filter-tab.active {
+            background: var(--primary-deep);
+            color: white;
+            border-color: var(--primary-deep);
+        }
+
+        /* ----- RESERVATIONS CARD – premium table container --------- */
+        .reservations-card {
+            background: var(--card-white);
+            border-radius: 48px;
+            padding: 2rem 2rem;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-smooth);
+            margin-bottom: 2rem;
+        }
+
+        .reservations-card:hover {
+            border-color: rgba(174, 202, 214, 0.7);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 24px;
+        }
+
+        .reservations-table {
             width: 100%;
             border-collapse: collapse;
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgb(0 0 0 / 0.1);
+            font-size: 0.9rem;
         }
-        th, td {
-            padding: 15px;
+
+        .reservations-table th {
             text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background: #667eea;
-            color: white;
+            padding: 1.2rem 1rem;
+            background: #f3f9fc;
+            color: var(--primary-deep);
+            font-weight: 590;
+            font-size: 0.7rem;
             text-transform: uppercase;
+            letter-spacing: 0.08em;
+            border-bottom: 1.8px solid var(--border-light);
         }
-        tr:hover {
-            background-color: #f1f5ff;
+
+        .reservations-table td {
+            padding: 1.3rem 1rem;
+            border-bottom: 1px solid #ecf3f6;
+            vertical-align: middle;
+            color: #1d4953;
         }
-        .btn {
-            padding: 8px 15px;
-            border-radius: 6px;
-            text-decoration: none;
+
+        .reservations-table tr:hover td {
+            background: #fafdfe;
+        }
+
+        /* ----- CAR INFO – compact, visual -------------------------- */
+        .car-info-compact {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .car-image-small {
+            width: 60px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(145deg, #e9f1f5, #dfecf0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-soft);
+            font-size: 1.4rem;
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+        }
+
+        .car-image-small img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .car-details-compact h4 {
+            font-size: 0.95rem;
+            font-weight: 580;
+            color: #0a404b;
+            margin-bottom: 0.2rem;
+        }
+
+        .car-details-compact p {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* ----- CUSTOMER INFO --------------------------------------- */
+        .customer-info {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .customer-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary-mist);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-deep);
+            font-size: 0.9rem;
             font-weight: 600;
-            color: white;
-            transition: background-color 0.3s ease;
-            margin-right: 8px;
-            display: inline-block;
+            border: 1px solid var(--border-soft);
         }
+
+        .customer-details {
+            font-size: 0.85rem;
+        }
+
+        .customer-name {
+            font-weight: 580;
+            color: #0a404b;
+        }
+
+        .customer-email {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* ----- STATUS BADGES – cohesive with system ---------------- */
+        .status-badge {
+            display: inline-block;
+            padding: 0.45rem 1.3rem;
+            border-radius: 60px;
+            font-size: 0.7rem;
+            font-weight: 620;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            border: 1px solid transparent;
+        }
+
+        .status-pending {
+            background: var(--warning-bg);
+            color: var(--warning);
+            border-color: #eadbc2;
+        }
+
+        .status-approved {
+            background: var(--success-bg);
+            color: var(--success);
+            border-color: #c2d9dd;
+        }
+
+        .status-rejected {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border-color: #e6cfc7;
+        }
+
+        .status-completed {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-color: #b8d9de;
+        }
+
+        .status-cancelled {
+            background: #e2e3e5;
+            color: #383d41;
+            border-color: #cbccce;
+        }
+
+        /* ----- ACTION BUTTONS – premium, refined ------------------- */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: 550;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: var(--transition-smooth);
+            text-decoration: none;
+            letter-spacing: 0.02em;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px -10px rgba(0,0,0,0.15);
+        }
+
         .btn-approve {
-            background-color: #48bb78;
+            background: var(--success);
         }
         .btn-approve:hover {
-            background-color: #3a9a5a;
+            background: #1f707c;
         }
+
         .btn-reject {
-            background-color: #f56565;
+            background: var(--danger);
         }
         .btn-reject:hover {
-            background-color: #c53030;
+            background: #8a5a4f;
         }
-        .status {
-            font-weight: 700;
-            text-transform: capitalize;
+
+        .btn-view {
+            background: var(--primary-soft);
         }
-        .status.pending {
-            color: #d69e2e;
+
+        .btn-receipt {
+            background: var(--primary-deep);
         }
-        .status.approved {
-            color: #38a169;
+
+        /* ----- EMPTY STATE – elegant -------------------------------- */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 1.5rem;
         }
-        .status.rejected {
-            color: #e53e3e;
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #c7dbe1;
+            margin-bottom: 1.2rem;
         }
+
+        .empty-state h3 {
+            font-weight: 500;
+            color: #2a5e69;
+            margin-bottom: 0.5rem;
+            font-size: 1.4rem;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+            margin-bottom: 1.8rem;
+        }
+
+        /* ----- BACK LINK -------------------------------------------- */
+        .back-link {
+            margin-bottom: 2rem;
+        }
+
+        .back-link a {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-weight: 520;
+            font-size: 0.95rem;
+            transition: var(--transition-smooth);
+            border-bottom: 1.5px solid transparent;
+            padding-bottom: 0.2rem;
+        }
+
+        .back-link a:hover {
+            color: var(--primary-deep);
+            border-bottom-color: var(--primary-deep);
+        }
+
+        /* ----- RESPONSIVE ------------------------------------------ */
+        @media (max-width: 768px) {
+            body { padding: 1.2rem; }
+            .page-header { flex-direction: column; align-items: flex-start; }
+            .stats-summary { grid-template-columns: 1fr; }
+            .filter-tabs { overflow-x: auto; padding-bottom: 0.5rem; }
+        }
+
+        ::selection { background: rgba(26,79,90,0.08); color: #0a404b; }
+        :focus-visible { outline: 3px solid rgba(26,79,90,0.2); outline-offset: 3px; border-radius: 30px; }
+        .fa, .fas, .far, .fab { font-variant-emoji: none; }
     </style>
 </head>
 <body>
+    <div class="container">
+        <!-- HEADER with back navigation -->
+        <div class="back-link">
+            <a href="{% url 'admin_dashboard' %}">
+                <i class="fas fa-arrow-left"></i> Back to dashboard
+            </a>
+        </div>
 
-    <h1>Manage Reservations</h1>
+        <div class="page-header">
+            <div class="title-section">
+                <h1>
+                    <i class="fas fa-calendar-check"></i> Manage reservations
+                </h1>
+                <p>Review, approve, or reject customer booking requests</p>
+            </div>
+            <div>
+                <a href="{% url 'all_reservations' %}" class="btn btn-primary">
+                    <i class="fas fa-list"></i> View all
+                </a>
+            </div>
+        </div>
 
-    {% if reservations %}
-    <table>
-        <thead>
-            <tr>
-                <th>Car</th>
-                <th>Customer</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for reservation in reservations %}
-            <tr>
-                <td>{{ reservation.car.brand }} - {{ reservation.car.name }}</td>
-                <td>{{ reservation.customer.username }}</td>
-                <td>{{ reservation.start_date }}</td>
-                <td>{{ reservation.end_date }}</td>
-                <td class="status {{ reservation.status }}">{{ reservation.status }}</td>
-                <td>
-                    {% if reservation.status == 'pending' %}
-                        <a href="{% url 'reservation_update_status' reservation.id 'approved' %}" class="btn btn-approve">Approve</a>
-                        <a href="{% url 'reservation_update_status' reservation.id 'rejected' %}" class="btn btn-reject">Reject</a>
-                    {% else %}
-                        No actions available
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <p>No reservations found.</p>
-    {% endif %}
+        <!-- STATS SUMMARY (if available) -->
+        {% if stats %}
+        <div class="stats-summary">
+            <div class="stat-mini-card">
+                <div class="stat-mini-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-mini-content">
+                    <div class="stat-mini-number">{{ stats.pending|default:"0" }}</div>
+                    <div class="stat-mini-label">Pending</div>
+                </div>
+            </div>
+            <div class="stat-mini-card">
+                <div class="stat-mini-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-mini-content">
+                    <div class="stat-mini-number">{{ stats.approved|default:"0" }}</div>
+                    <div class="stat-mini-label">Approved</div>
+                </div>
+            </div>
+            <div class="stat-mini-card">
+                <div class="stat-mini-icon">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="stat-mini-content">
+                    <div class="stat-mini-number">{{ stats.rejected|default:"0" }}</div>
+                    <div class="stat-mini-label">Rejected</div>
+                </div>
+            </div>
+            <div class="stat-mini-card">
+                <div class="stat-mini-icon">
+                    <i class="fas fa-check-double"></i>
+                </div>
+                <div class="stat-mini-content">
+                    <div class="stat-mini-number">{{ stats.completed|default:"0" }}</div>
+                    <div class="stat-mini-label">Completed</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
 
+        <!-- FILTER TABS -->
+        <div class="filter-tabs">
+            <a href="{% url 'all_reservations' %}" class="filter-tab {% if not request.GET.status %}active{% endif %}">
+                <i class="fas fa-list-ul"></i> All
+            </a>
+            <a href="{% url 'all_reservations' %}?status=pending" class="filter-tab {% if request.GET.status == 'pending' %}active{% endif %}">
+                <i class="fas fa-clock"></i> Pending
+            </a>
+            <a href="{% url 'all_reservations' %}?status=approved" class="filter-tab {% if request.GET.status == 'approved' %}active{% endif %}">
+                <i class="fas fa-check-circle"></i> Approved
+            </a>
+            <a href="{% url 'all_reservations' %}?status=rejected" class="filter-tab {% if request.GET.status == 'rejected' %}active{% endif %}">
+                <i class="fas fa-times-circle"></i> Rejected
+            </a>
+            <a href="{% url 'all_reservations' %}?status=completed" class="filter-tab {% if request.GET.status == 'completed' %}active{% endif %}">
+                <i class="fas fa-check-double"></i> Completed
+            </a>
+            <a href="{% url 'all_reservations' %}?status=cancelled" class="filter-tab {% if request.GET.status == 'cancelled' %}active{% endif %}">
+                <i class="fas fa-ban"></i> Cancelled
+            </a>
+        </div>
+
+        <!-- RESERVATIONS TABLE – MAIN CONTENT -->
+        <div class="reservations-card">
+            <div class="table-responsive">
+                <table class="reservations-table">
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>Vehicle</th>
+                            <th>Customer</th>
+                            <th>Rental period</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if reservations %}
+                            {% for reservation in reservations %}
+                            <tr>
+                                <td>
+                                    <strong>#{{ reservation.id }}</strong><br>
+                                    <small style="color: var(--text-muted);">{{ reservation.created_at|date:"M d, Y"|default:"" }}</small>
+                                </td>
+                                <td>
+                                    <div class="car-info-compact">
+                                        <div class="car-image-small">
+                                            {% if reservation.car.image %}
+                                                <img src="{{ reservation.car.image.url }}" alt="{{ reservation.car.brand }} {{ reservation.car.name }}">
+                                            {% else %}
+                                                <i class="fas fa-car"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div class="car-details-compact">
+                                            <h4>{{ reservation.car.brand }} {{ reservation.car.name }}</h4>
+                                            <p><i class="fas fa-bolt"></i> {{ reservation.car.get_transmission_display|default:"Auto" }} • <i class="fas fa-users"></i> {{ reservation.car.seats|default:"4" }} seats</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="customer-info">
+                                        <div class="customer-avatar">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div class="customer-details">
+                                            <div class="customer-name">{{ reservation.customer.username }}</div>
+                                            <div class="customer-email">{{ reservation.contact_email|default:reservation.customer.email|truncatechars:20 }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong>{{ reservation.start_date|date:"M d, Y" }}</strong><br>
+                                    <span style="color: var(--text-muted); font-size: 0.75rem;">to</span><br>
+                                    <strong>{{ reservation.end_date|date:"M d, Y" }}</strong>
+                                </td>
+                                <td>
+                                    <strong style="font-size: 1rem; color: var(--primary-deep);">₱{{ reservation.total_amount|floatformat:2 }}</strong><br>
+                                    <small style="color: var(--text-muted);">₱{{ reservation.car.price_per_day }}/day</small>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-{{ reservation.status|lower }}">
+                                        {{ reservation.get_status_display|default:reservation.status|title }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        {% if reservation.status|lower == 'pending' %}
+                                            <a href="{% url 'reservation_update_status' reservation.id 'approved' %}" class="btn-action btn-approve" onclick="return confirm('Approve this reservation?')">
+                                                <i class="fas fa-check"></i> Approve
+                                            </a>
+                                            <a href="{% url 'reservation_update_status' reservation.id 'rejected' %}" class="btn-action btn-reject" onclick="return confirm('Reject this reservation?')">
+                                                <i class="fas fa-times"></i> Reject
+                                            </a>
+                                        {% endif %}
+                                        
+                                        <a href="{% url 'view_reservation' reservation.id %}" class="btn-action btn-view">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                        
+                                        {% if reservation.status|lower == 'approved' or reservation.status|lower == 'completed' %}
+                                            <a href="{% url 'admin_download_receipt' reservation.id %}" class="btn-action" style="background: var(--primary-deep);">
+                                                <i class="fas fa-receipt"></i> Receipt
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="7">
+                                    <div class="empty-state">
+                                        <i class="fas fa-calendar-times"></i>
+                                        <h3>No reservations found</h3>
+                                        <p>There are no reservations matching your current filters.</p>
+                                        <a href="{% url 'all_reservations' %}" class="btn btn-primary">
+                                            <i class="fas fa-list"></i> View all reservations
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ADMIN QUICK NAVIGATION -->
+        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="{% url 'car_list' %}" class="btn btn-secondary">
+                <i class="fas fa-car"></i> Manage fleet
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Add CSRF token handling if needed for any AJAX operations
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Add cursor pointer to all clickable elements
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.filter-tab, .btn, .stat-mini-card').forEach(element => {
+                if (element.classList.contains('btn') || element.classList.contains('filter-tab') || element.classList.contains('stat-mini-card')) {
+                    element.style.cursor = 'pointer';
+                }
+            });
+        });
+    </script>
 </body>
 </html>

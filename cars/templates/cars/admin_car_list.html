@@ -1,0 +1,474 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Fleet - Car Moto Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .page-header h2 {
+        font-size: 2.2rem;
+        font-weight: 540;
+        letter-spacing: -0.018em;
+        color: #0a404b;
+        margin-bottom: 0.6rem;
+    }
+    
+    .page-header p {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        max-width: 600px;
+        margin: 0 auto;
+        border-left: 3px solid #9ec2cc;
+        padding-left: 1.2rem;
+        font-weight: 360;
+    }
+    
+    .filters-section {
+        background: var(--card-white);
+        border-radius: 32px;
+        padding: 1.5rem 2rem;
+        border: 1px solid var(--border-light);
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .filter-group {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    .filter-badge {
+        display: inline-block;
+        padding: 0.5rem 1.2rem;
+        border-radius: 40px;
+        font-size: 0.8rem;
+        font-weight: 550;
+        text-decoration: none;
+        color: var(--text-dark);
+        background: var(--primary-mist);
+        border: 1px solid var(--border-soft);
+        transition: var(--transition-smooth);
+    }
+    
+    .filter-badge:hover {
+        background: var(--primary-deep);
+        color: white;
+        border-color: var(--primary-deep);
+        transform: translateY(-2px);
+    }
+    
+    .filter-badge.active {
+        background: var(--primary-deep);
+        color: white;
+        border-color: var(--primary-deep);
+    }
+    
+    .stats-mini-cards {
+        display: flex;
+        gap: 1.5rem;
+    }
+    
+    .stat-mini {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 0.5rem 1.2rem;
+        background: var(--bg-warm);
+        border-radius: 40px;
+        border: 1px solid var(--border-light);
+    }
+    
+    .stat-mini i {
+        color: var(--primary-soft);
+        font-size: 1.1rem;
+    }
+    
+    .stat-mini span {
+        font-weight: 600;
+        color: var(--primary-deep);
+    }
+    
+    .car-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.8rem;
+        margin-top: 1.5rem;
+    }
+    
+    .car-card {
+        background: var(--card-white);
+        border-radius: 32px;
+        border: 1px solid var(--border-light);
+        overflow: hidden;
+        transition: var(--transition-smooth);
+        position: relative;
+    }
+    
+    .car-card:hover {
+        transform: translateY(-6px);
+        border-color: var(--primary-soft);
+        box-shadow: var(--shadow-hover);
+    }
+    
+    .car-image {
+        width: 100%;
+        height: 200px;
+        position: relative;
+        background: linear-gradient(145deg, #e9f1f5, #dfecf0);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .car-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .car-image i {
+        font-size: 4rem;
+        color: var(--primary-soft);
+        opacity: 0.5;
+    }
+    
+    .car-status-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.5rem 1.2rem;
+        border-radius: 40px;
+        font-size: 0.7rem;
+        font-weight: 620;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        background: white;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .car-details {
+        padding: 1.8rem;
+    }
+    
+    .car-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+    
+    .car-title h3 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #0a404b;
+        margin-bottom: 0.3rem;
+    }
+    
+    .car-title p {
+        color: var(--text-muted);
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    .car-price {
+        text-align: right;
+    }
+    
+    .car-price .price {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-deep);
+        line-height: 1;
+    }
+    
+    .car-price .period {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+    }
+    
+    .car-specs {
+        display: flex;
+        gap: 1rem;
+        margin: 1.2rem 0;
+        padding: 1rem 0;
+        border-top: 1px solid var(--border-light);
+        border-bottom: 1px solid var(--border-light);
+    }
+    
+    .car-spec {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-muted);
+        font-size: 0.8rem;
+    }
+    
+    .car-spec i {
+        color: var(--primary-soft);
+    }
+    
+    .car-actions {
+        display: flex;
+        gap: 0.8rem;
+        margin-top: 1.5rem;
+    }
+    
+    .btn-card {
+        flex: 1;
+        padding: 0.8rem;
+        border-radius: 40px;
+        font-size: 0.8rem;
+        font-weight: 550;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        transition: var(--transition-smooth);
+        border: 1.5px solid transparent;
+    }
+    
+    .btn-edit-card {
+        background: var(--primary-deep);
+        color: white;
+    }
+    
+    .btn-edit-card:hover {
+        background: var(--primary-soft);
+        transform: translateY(-2px);
+    }
+    
+    .btn-toggle-card {
+        background: var(--primary-mist);
+        color: var(--primary-deep);
+        border: 1.5px solid var(--border-soft);
+    }
+    
+    .btn-toggle-card:hover {
+        background: var(--primary-deep);
+        color: white;
+        border-color: var(--primary-deep);
+    }
+    
+    .btn-delete-card {
+        background: var(--danger-bg);
+        color: var(--danger);
+        border: 1.5px solid #e6cfc7;
+    }
+    
+    .btn-delete-card:hover {
+        background: var(--danger);
+        color: white;
+        border-color: var(--danger);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 4rem 1.5rem;
+        color: var(--text-muted);
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        color: #c7dbe1;
+        margin-bottom: 1.2rem;
+    }
+    
+    .empty-state h3 {
+        font-weight: 500;
+        color: #2a5e69;
+        margin-bottom: 0.5rem;
+        font-size: 1.4rem;
+    }
+    
+    .empty-state p {
+        margin-bottom: 1.8rem;
+    }
+    
+    .content-section {
+        background: var(--card-white);
+        border-radius: 48px;
+        padding: 2.2rem 2.2rem;
+        border: 1px solid var(--border-light);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 2rem;
+    }
+    
+    @media (max-width: 768px) {
+        .filters-section {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .car-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .stats-mini-cards {
+            flex-direction: column;
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2><i class="fas fa-car-side"></i> Fleet Management</h2>
+    <p>View and manage all vehicles in your fleet</p>
+</div>
+
+<!-- Filters and Stats -->
+<div class="filters-section">
+    <div class="filter-group">
+        <a href="{% url 'admin_car_list' %}" class="filter-badge {% if not request.GET.status %}active{% endif %}">
+            <i class="fas fa-car"></i> All Cars
+        </a>
+        <a href="{% url 'admin_car_list' %}?status=available" class="filter-badge {% if request.GET.status == 'available' %}active{% endif %}">
+            <i class="fas fa-check-circle"></i> Available
+        </a>
+        <a href="{% url 'admin_car_list' %}?status=unavailable" class="filter-badge {% if request.GET.status == 'unavailable' %}active{% endif %}">
+            <i class="fas fa-times-circle"></i> Unavailable
+        </a>
+    </div>
+    
+    <div class="stats-mini-cards">
+        <div class="stat-mini">
+            <i class="fas fa-car"></i>
+            <span>{{ cars|length }}</span> Total
+        </div>
+        <div class="stat-mini">
+            <i class="fas fa-check-circle"></i>
+            <span>{{ cars_available|default:"0" }}</span> Available
+        </div>
+    </div>
+</div>
+
+<!-- Add New Car Button -->
+<div style="display: flex; justify-content: flex-end; margin-bottom: 1.5rem;">
+    <a href="{% url 'add_car' %}" class="btn btn-primary">
+        <i class="fas fa-plus-circle"></i> Add New Vehicle
+    </a>
+</div>
+
+<!-- Cars Grid -->
+{% if cars %}
+<div class="car-grid">
+    {% for car in cars %}
+    <div class="car-card">
+        <div class="car-image">
+            {% if car.image %}
+                <img src="{{ car.image.url }}" alt="{{ car.brand }} {{ car.name }}">
+            {% else %}
+                <i class="fas fa-car"></i>
+            {% endif %}
+            <span class="car-status-badge {% if car.is_available %}status-available{% else %}status-unavailable{% endif %}">
+                {% if car.is_available %}Available{% else %}Unavailable{% endif %}
+            </span>
+        </div>
+        
+        <div class="car-details">
+            <div class="car-header">
+                <div class="car-title">
+                    <h3>{{ car.brand }} {{ car.name }}</h3>
+                    <p>
+                        <i class="fas fa-calendar-alt"></i> Added {{ car.created_at|date:"M d, Y" }}
+                    </p>
+                </div>
+                <div class="car-price">
+                    <div class="price">₱{{ car.price_per_day|floatformat:2 }}</div>
+                    <div class="period">per day</div>
+                </div>
+            </div>
+            
+            <div class="car-specs">
+                <span class="car-spec">
+                    <i class="fas fa-bolt"></i> {{ car.get_transmission_display|default:"Automatic" }}
+                </span>
+                <span class="car-spec">
+                    <i class="fas fa-users"></i> {{ car.seats|default:"4" }} seats
+                </span>
+                <span class="car-spec">
+                    <i class="fas fa-gas-pump"></i> {{ car.fuel_type|default:"Petrol" }}
+                </span>
+            </div>
+            
+            {% if car.description %}
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin: 1rem 0;">
+                {{ car.description|truncatewords:20 }}
+            </p>
+            {% endif %}
+            
+            <div class="car-actions">
+                <a href="{% url 'edit_car' car.id %}" class="btn-card btn-edit-card">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+                
+                <form method="POST" action="{% url 'toggle_car_status' car.id %}" style="display: inline; flex: 1;" 
+                      onsubmit="return confirm('Are you sure you want to change the status of {{ car.brand }} {{ car.name }}?')">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-card btn-toggle-card" style="width: 100%;">
+                        <i class="fas fa-sync-alt"></i> Toggle
+                    </button>
+                </form>
+                
+                <a href="{% url 'delete_car_admin' car.id %}" class="btn-card btn-delete-card" 
+                   onclick="return confirm('Are you sure you want to delete {{ car.brand }} {{ car.name }}? This action cannot be undone.')">
+                    <i class="fas fa-trash"></i> Delete
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="content-section">
+    <div class="empty-state">
+        <i class="fas fa-car"></i>
+        <h3>No vehicles in fleet</h3>
+        <p>Add your first car to get started with your fleet management</p>
+        <a href="{% url 'add_car' %}" class="btn btn-primary" style="margin-top: 1.5rem;">
+            <i class="fas fa-plus-circle"></i> Add New Vehicle
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<!-- Back to Dashboard -->
+<div style="text-align: right; margin-top: 2rem;">
+    <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-hide messages after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(function() {
+            const messages = document.querySelectorAll('.messages .alert');
+            messages.forEach(msg => {
+                msg.style.opacity = '0';
+                msg.style.transition = 'opacity 0.5s';
+                setTimeout(() => msg.remove(), 500);
+            });
+        }, 5000);
+    });
+</script>
+{% endblock %}

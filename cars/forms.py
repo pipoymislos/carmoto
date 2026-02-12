@@ -23,20 +23,30 @@ class CarForm(forms.ModelForm):
         }
 
 class ReservationForm(forms.ModelForm):
-    start_date = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date', 'min': date.today().isoformat()})
-    )
-    end_date = forms.DateField(
-        widget=forms.DateInput(attrs={'type': 'date', 'min': date.today().isoformat()})
-    )
-    pickup_time = forms.TimeField(
-        widget=forms.TimeInput(attrs={'type': 'time'})
-    )
-    dropoff_time = forms.TimeField(
-        widget=forms.TimeInput(attrs={'type': 'time'})
-    )
-    
     class Meta:
         model = Reservation
         fields = ['contact_email', 'contact_phone', 'start_date', 'end_date', 
                   'pickup_time', 'dropoff_time', 'special_requests']
+        widgets = {
+            'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'date-input'}),
+            'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'date-input'}),
+            'pickup_time': forms.TimeInput(attrs={'type': 'time', 'class': 'time-input'}),
+            'dropoff_time': forms.TimeInput(attrs={'type': 'time', 'class': 'time-input'}),
+            'special_requests': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Any special requirements?'}),
+            'contact_email': forms.EmailInput(attrs={'placeholder': 'your@email.com'}),
+            'contact_phone': forms.TextInput(attrs={'placeholder': '+63 XXX XXX XXXX'}),
+        }
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        start_date = cleaned_data.get('start_date')
+        end_date = cleaned_data.get('end_date')
+        
+        if start_date and end_date:
+            if start_date < date.today():
+                raise forms.ValidationError("Start date cannot be in the past.")
+            
+            if end_date <= start_date:
+                raise forms.ValidationError("End date must be after start date.")
+        
+        return cleaned_data

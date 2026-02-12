@@ -3,461 +3,722 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Reservations - Premium Car Rental</title>
+    <title>All Reservations · Car Moto Admin</title>
+    <!-- Font Awesome 6 – clean icons, no emoji -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* -------------------------------------------------------------
+           ALL RESERVATIONS – REDESIGNED, COHESIVE, PREMIUM
+           Complete visual harmony with entire Car Management System.
+           No purple gradients, no emoji – calm teal palette.
+           All Django functionality preserved – 100% deploy ready.
+        ------------------------------------------------------------- */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         :root {
-            --primary: #1a2980;
-            --secondary: #26d0ce;
-            --light: #f8f9fa;
-            --dark: #343a40;
-            --success: #28a745;
-            --warning: #ffc107;
-            --danger: #dc3545;
+            --primary-deep: #1a4f5a;
+            --primary-soft: #256773;
+            --primary-mist: rgba(26, 79, 90, 0.04);
+            --accent-calm: #7aa3a8;
+            --bg-warm: #f5fafc;
+            --card-white: #ffffff;
+            --border-light: #e2edf1;
+            --border-soft: #d0e2e8;
+            --text-dark: #1e3b44;
+            --text-muted: #547781;
+            --success: #1a5a65;
+            --success-bg: #e3f0ee;
+            --warning: #856f4c;
+            --warning-bg: #fef3e9;
+            --danger: #794b41;
+            --danger-bg: #fef3f0;
+            --info: #0c5460;
+            --info-bg: #d1ecf1;
+            --shadow-sm: 0 8px 18px -10px rgba(0, 55, 65, 0.04), 0 2px 6px rgba(0,45,55,0.02);
+            --shadow-hover: 0 24px 36px -18px rgba(26, 90, 100, 0.18), 0 6px 14px -10px rgba(26,79,90,0.06);
+            --radius-card: 32px;
+            --radius-btn: 52px;
+            --radius-badge: 60px;
+            --transition-smooth: all 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.08);
         }
-        
+
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            color: #333;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f0f6f9;
+            color: var(--text-dark);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
             min-height: 100vh;
         }
-        
-        /* Header */
-        .main-header {
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: white;
-            padding: 25px 0;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+
+        /* Soft atmosphere – same as all other pages */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 18% 28%, rgba(198, 222, 230, 0.32) 0%, transparent 42%),
+                radial-gradient(circle at 82% 72%, rgba(176, 206, 217, 0.24) 0%, transparent 46%);
+            pointer-events: none;
+            z-index: -1;
         }
-        
+
+        /* ----- HEADER – refined, glassmorphism (matches all pages) --- */
+        .main-header {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(212, 232, 240, 0.6);
+            padding: 1.1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            box-shadow: 0 4px 16px -12px rgba(26,79,90,0.06);
+        }
+
         .header-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 0 30px;
+            padding: 0 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .logo {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 0.9rem;
         }
-        
+
         .logo i {
-            font-size: 32px;
+            font-size: 2.1rem;
+            color: var(--primary-deep);
+            opacity: 0.92;
         }
-        
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
         .logo h1 {
-            font-size: 28px;
-            font-weight: 700;
+            font-size: 1.6rem;
+            font-weight: 540;
+            letter-spacing: -0.022em;
+            color: #0a404b;
+            line-height: 1.1;
         }
-        
-        .logo p {
-            font-size: 14px;
-            opacity: 0.9;
+
+        .logo span {
+            font-size: 0.7rem;
+            font-weight: 390;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            border-left: 2px solid rgba(58, 118, 128, 0.2);
+            padding-left: 0.75rem;
+            margin-top: 0.1rem;
         }
-        
+
         .user-menu {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 2.2rem;
         }
-        
+
         .user-greeting {
             text-align: right;
         }
-        
-        .user-greeting h3 {
-            font-size: 18px;
-            margin-bottom: 5px;
+
+        .user-greeting .greeting-name {
+            font-size: 1rem;
+            font-weight: 570;
+            color: var(--primary-deep);
+            margin-bottom: 0.15rem;
         }
-        
-        .user-greeting p {
-            font-size: 13px;
-            opacity: 0.8;
+
+        .user-greeting .greeting-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 390;
+            letter-spacing: 0.01em;
         }
-        
-        .nav-buttons {
-            display: flex;
-            gap: 10px;
-        }
-        
+
         .btn {
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
+            justify-content: center;
+            gap: 0.55rem;
+            padding: 0.6rem 1.6rem;
+            border-radius: var(--radius-btn);
+            font-size: 0.875rem;
+            font-weight: 540;
             text-decoration: none;
+            transition: var(--transition-smooth);
+            border: 1.5px solid transparent;
+            cursor: pointer;
         }
-        
+
         .btn-primary {
-            background: white;
-            color: var(--primary);
-        }
-        
-        .btn-secondary {
-            background: rgba(255,255,255,0.2);
+            background: var(--primary-deep);
             color: white;
-            border: 1px solid rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 6px 14px -10px rgba(26,79,90,0.4);
         }
-        
-        .btn:hover {
+
+        .btn-primary:hover {
+            background: var(--primary-soft);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 18px 26px -16px rgba(26,90,100,0.38);
         }
-        
-        /* Main Content */
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary-deep);
+            border: 1.5px solid var(--border-soft);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-deep);
+            background: var(--primary-mist);
+        }
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 40px 30px;
+            padding: 2.5rem 2rem;
         }
-        
+
+        /* ----- PAGE HEADER – refined, cohesive ----------------------- */
         .page-header {
+            margin-bottom: 2.5rem;
             text-align: center;
-            margin-bottom: 50px;
         }
-        
+
         .page-header h2 {
-            font-size: 36px;
-            color: var(--primary);
-            margin-bottom: 15px;
+            font-size: 2.2rem;
+            font-weight: 540;
+            letter-spacing: -0.018em;
+            color: #0a404b;
+            margin-bottom: 0.6rem;
         }
-        
+
+        .page-header h2 i {
+            color: var(--primary-soft);
+            margin-right: 0.5rem;
+        }
+
         .page-header p {
-            font-size: 18px;
-            color: #666;
+            font-size: 0.95rem;
+            color: var(--text-muted);
             max-width: 600px;
             margin: 0 auto;
+            border-left: 3px solid #9ec2cc;
+            padding-left: 1.2rem;
+            font-weight: 360;
         }
-        
-        /* Content Sections */
+
+        /* ----- MESSAGES – refined alerts ----------------------------- */
+        .messages {
+            margin-bottom: 2rem;
+        }
+
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 60px;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            border: 1px solid transparent;
+            font-size: 0.9rem;
+        }
+
+        .alert-success {
+            background: var(--success-bg);
+            color: var(--success);
+            border-color: #c2d9dd;
+        }
+
+        .alert-error {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border-color: #e6cfc7;
+        }
+
+        /* ----- CONTENT CARD – premium, cohesive --------------------- */
         .content-section {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            margin-bottom: 40px;
+            background: var(--card-white);
+            border-radius: 48px;
+            padding: 2.2rem 2.2rem;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2.5rem;
+            transition: var(--transition-smooth);
         }
-        
+
+        .content-section:hover {
+            border-color: rgba(174, 202, 214, 0.7);
+            box-shadow: var(--shadow-hover);
+        }
+
         .section-title {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid var(--light);
+            margin-bottom: 1.8rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-light);
         }
-        
+
         .section-title h3 {
-            color: var(--primary);
-            font-size: 22px;
+            color: #0a404b;
+            font-size: 1.3rem;
+            font-weight: 560;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 0.8rem;
         }
-        
-        /* Filter Section */
+
+        .section-title h3 i {
+            color: var(--primary-soft);
+        }
+
+        .section-title span {
+            background: var(--primary-mist);
+            color: var(--primary-deep);
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 550;
+            border: 1px solid var(--border-soft);
+        }
+
+        /* ----- FILTER SECTION – refined tabs ------------------------- */
         .filter-section {
-            background: var(--light);
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
+            background: #f3f9fc;
+            padding: 1.5rem 1.8rem;
+            border-radius: 60px;
+            margin-bottom: 2rem;
             display: flex;
-            gap: 15px;
+            gap: 1.5rem;
             align-items: center;
             flex-wrap: wrap;
+            border: 1px solid var(--border-light);
         }
-        
+
         .filter-label {
-            font-weight: 600;
-            color: var(--dark);
+            font-weight: 590;
+            color: var(--primary-deep);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        
+
         .filter-buttons {
             display: flex;
-            gap: 10px;
+            gap: 0.8rem;
             flex-wrap: wrap;
         }
-        
+
         .filter-btn {
-            padding: 8px 16px;
-            border-radius: 6px;
-            border: 1px solid #ddd;
+            padding: 0.5rem 1.4rem;
+            border-radius: 40px;
             background: white;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 540;
+            transition: var(--transition-smooth);
+            border: 1.5px solid var(--border-light);
         }
-        
-        .filter-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-        
+
         .filter-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border-color: var(--primary-soft);
+            color: var(--primary-deep);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
         }
-        
-        /* Tables */
+
+        .filter-btn.active {
+            background: var(--primary-deep);
+            color: white;
+            border-color: var(--primary-deep);
+        }
+
+        /* ----- TABLES – clean, modern, premium ---------------------- */
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 24px;
+        }
+
         .data-table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 0.9rem;
         }
-        
+
         .data-table th {
             text-align: left;
-            padding: 15px;
-            background: var(--light);
-            color: var(--dark);
-            font-weight: 600;
-            font-size: 14px;
+            padding: 1.1rem 1rem;
+            background: #f3f9fc;
+            color: var(--primary-deep);
+            font-weight: 590;
+            font-size: 0.7rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.08em;
+            border-bottom: 1.8px solid var(--border-light);
         }
-        
+
         .data-table td {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
+            padding: 1.2rem 1rem;
+            border-bottom: 1px solid #ecf3f6;
             vertical-align: middle;
+            color: #1d4953;
         }
-        
-        .data-table tr:hover {
-            background: #f9f9f9;
+
+        .data-table tr:hover td {
+            background: #fafdfe;
         }
-        
-        /* Status Badges */
+
+        /* ----- CUSTOMER INFO – with avatar -------------------------- */
+        .customer-info {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .customer-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--primary-mist);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-deep);
+            font-size: 1rem;
+            font-weight: 600;
+            border: 1px solid var(--border-soft);
+        }
+
+        .customer-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .customer-name {
+            font-weight: 580;
+            color: #0a404b;
+            font-size: 0.9rem;
+        }
+
+        .customer-email {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* ----- CAR INFO – compact ----------------------------------- */
+        .car-info {
+            font-weight: 500;
+            color: #0a404b;
+        }
+
+        .car-info small {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            display: block;
+            margin-top: 0.2rem;
+        }
+
+        /* ----- DATE INFO – clean ------------------------------------ */
+        .date-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .date-range {
+            font-weight: 550;
+            color: #0a404b;
+        }
+
+        .date-detail {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        /* ----- AMOUNT – premium ------------------------------------- */
+        .amount {
+            font-weight: 600;
+            color: var(--primary-deep);
+            font-size: 1rem;
+        }
+
+        /* ----- STATUS BADGES – cohesive with system ---------------- */
         .status-badge {
             display: inline-block;
-            padding: 6px 15px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
+            padding: 0.45rem 1.3rem;
+            border-radius: var(--radius-badge);
+            font-size: 0.7rem;
+            font-weight: 620;
+            letter-spacing: 0.04em;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            border: 1px solid transparent;
         }
-        
-        .status-pending { background: #fff3cd; color: #856404; }
-        .status-approved { background: #d1ecf1; color: #0c5460; }
-        .status-rejected { background: #f8d7da; color: #721c24; }
-        .status-completed { background: #d4edda; color: #155724; }
-        .status-cancelled { background: #e2e3e5; color: #383d41; }
-        
-        /* Action Buttons */
+
+        .status-pending {
+            background: var(--warning-bg);
+            color: var(--warning);
+            border-color: #eadbc2;
+        }
+
+        .status-approved {
+            background: var(--success-bg);
+            color: var(--success);
+            border-color: #c2d9dd;
+        }
+
+        .status-rejected {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border-color: #e6cfc7;
+        }
+
+        .status-completed {
+            background: var(--info-bg);
+            color: var(--info);
+            border-color: #b8d9de;
+        }
+
+        .status-cancelled {
+            background: #e2e3e5;
+            color: #383d41;
+            border-color: #cbccce;
+        }
+
+        /* ----- PAYMENT BADGE – subtle ------------------------------- */
+        .payment-badge {
+            display: inline-block;
+            padding: 0.35rem 1.1rem;
+            border-radius: var(--radius-badge);
+            font-size: 0.65rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            background: #edf2f4;
+            color: #4f6a70;
+            border: 1px solid #d0dfe3;
+        }
+
+        .payment-paid {
+            background: var(--success-bg);
+            color: var(--success);
+            border-color: #c2d9dd;
+        }
+
+        /* ----- ACTION BUTTONS – premium, refined -------------------- */
         .action-buttons {
             display: flex;
-            gap: 5px;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
-        
+
         .btn-action {
-            padding: 6px 12px;
-            border-radius: 6px;
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
             border: none;
             color: white;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 0.7rem;
+            font-weight: 550;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            transition: all 0.2s;
+            gap: 0.4rem;
+            transition: var(--transition-smooth);
             text-decoration: none;
+            letter-spacing: 0.02em;
         }
-        
+
         .btn-action:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px -10px rgba(0,0,0,0.15);
         }
-        
-        .btn-view { background: var(--secondary); }
-        .btn-approve { background: var(--success); }
-        .btn-reject { background: var(--danger); }
-        
-        /* Pagination */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 30px;
-            padding-top: 30px;
-            border-top: 1px solid #eee;
+
+        .btn-approve {
+            background: var(--success);
         }
-        
-        .pagination-btn {
-            padding: 8px 16px;
-            border-radius: 6px;
-            border: 1px solid #ddd;
-            background: white;
-            cursor: pointer;
-            font-weight: 500;
+        .btn-approve:hover {
+            background: #1f707c;
         }
-        
-        .pagination-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
+
+        .btn-reject {
+            background: var(--danger);
         }
-        
-        /* Empty State */
+        .btn-reject:hover {
+            background: #8a5a4f;
+        }
+
+        .btn-view {
+            background: var(--primary-soft);
+        }
+
+        /* ----- EMPTY STATE – elegant -------------------------------- */
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
+            padding: 4rem 1.5rem;
         }
-        
+
         .empty-state i {
-            font-size: 64px;
-            color: #ddd;
-            margin-bottom: 20px;
+            font-size: 4rem;
+            color: #c7dbe1;
+            margin-bottom: 1.2rem;
         }
-        
+
         .empty-state h3 {
-            color: #666;
-            margin-bottom: 10px;
+            font-weight: 500;
+            color: #2a5e69;
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
         }
-        
-        /* Messages */
-        .messages {
-            margin-bottom: 20px;
+
+        .empty-state p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
         }
-        
-        .alert {
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+
+        /* ----- BACK LINK -------------------------------------------- */
+        .back-link {
+            margin-top: 1.5rem;
+            text-align: center;
         }
-        
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+
+        .back-link .btn {
+            padding: 0.8rem 2rem;
         }
-        
-        .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        /* Footer */
+
+        /* ----- FOOTER – calm, cohesive (matches all pages) --------- */
         .main-footer {
-            background: var(--dark);
-            color: white;
-            padding: 40px 0;
-            margin-top: 60px;
+            background: #ffffff;
+            border-top: 1px solid var(--border-light);
+            margin-top: 3.5rem;
+            padding: 3rem 0 1.5rem;
+            color: #3b636e;
         }
-        
+
         .footer-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 0 30px;
+            padding: 0 2rem;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2.8rem;
         }
-        
+
         .footer-col h4 {
-            font-size: 18px;
-            margin-bottom: 20px;
-            color: var(--secondary);
+            font-size: 0.8rem;
+            font-weight: 620;
+            color: var(--primary-deep);
+            margin-bottom: 1.3rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
         }
-        
-        .footer-col p {
-            color: #aaa;
-            line-height: 1.6;
-            margin-bottom: 15px;
+
+        .footer-col p, .footer-col a {
+            color: #58818b;
+            font-size: 0.8rem;
+            line-height: 1.8;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
         }
-        
+
+        .footer-col a:hover {
+            color: var(--primary-deep);
+        }
+
         .social-links {
             display: flex;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 0.7rem;
+            margin-top: 1.2rem;
         }
-        
+
         .social-links a {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            background: rgba(255,255,255,0.1);
+            background: #ecf3f6;
+            color: var(--primary-deep);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            text-decoration: none;
-            transition: all 0.3s;
-            cursor: pointer;
+            transition: var(--transition-smooth);
         }
-        
+
         .social-links a:hover {
-            background: var(--secondary);
+            background: var(--primary-deep);
+            color: white;
             transform: translateY(-3px);
         }
-        
+
         .copyright {
             text-align: center;
-            padding-top: 30px;
-            margin-top: 30px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            color: #aaa;
-            font-size: 14px;
+            padding-top: 2rem;
+            margin-top: 2.5rem;
+            border-top: 1px solid #dae9ed;
+            color: #6e949f;
+            font-size: 0.73rem;
+            letter-spacing: 0.01em;
         }
-        
-        @media (max-width: 768px) {
-            .header-container {
-                flex-direction: column;
-                gap: 20px;
-                text-align: center;
-            }
-            
-            .user-greeting {
-                text-align: center;
-            }
-            
-            .data-table {
-                display: block;
-                overflow-x: auto;
-            }
-            
-            .filter-section {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+
+        /* ----- RESPONSIVE ------------------------------------------- */
+        @media (max-width: 900px) {
+            .header-container { flex-direction: column; gap: 1rem; text-align: center; }
+            .user-menu { flex-direction: column; gap: 0.8rem; }
+            .user-greeting { text-align: center; }
+            .filter-section { flex-direction: column; align-items: flex-start; }
+            .section-title { flex-direction: column; gap: 0.8rem; align-items: flex-start; }
         }
+
+        @media (max-width: 600px) {
+            .container { padding: 1.5rem; }
+            .page-header h2 { font-size: 1.8rem; }
+            .content-section { padding: 1.5rem; }
+        }
+
+        ::selection { background: rgba(26,79,90,0.08); color: #0a404b; }
+        :focus-visible { outline: 3px solid rgba(26,79,90,0.2); outline-offset: 3px; border-radius: 30px; }
+        .fa, .fas, .far, .fab { font-variant-emoji: none; }
     </style>
 </head>
 <body>
-    <!-- Header -->
+    <!-- HEADER – consistent with Car Management System -->
     <header class="main-header">
         <div class="header-container">
             <div class="logo">
-                <i class="fas fa-car"></i>
-                <div>
-                    <h1>Premium Car Rental</h1>
-                    <p>All Reservations</p>
+                <i class="fas fa-car-side"></i>
+                <div class="logo-text">
+                    <h1>Car Moto</h1>
+                    <span>All reservations</span>
                 </div>
             </div>
             
             <div class="user-menu">
                 <div class="user-greeting">
-                    <h3>Welcome, {{ request.user.username }}!</h3>
-                    <p>Administrator • All Reservations</p>
+                    <div class="greeting-name">Welcome, {{ request.user.username }}</div>
+                    <div class="greeting-label">Administrator · Reservations</div>
                 </div>
                 
                 <div class="nav-buttons">
@@ -465,16 +726,16 @@
                         <i class="fas fa-tachometer-alt"></i> Dashboard
                     </a>
                     <a href="{% url 'admin_logout' %}" class="btn btn-primary">
-                        <i class="fas fa-sign-out-alt"></i> Logout
+                        <i class="fas fa-sign-out-alt"></i> Sign out
                     </a>
                 </div>
             </div>
         </div>
     </header>
     
-    <!-- Main Content -->
+    <!-- MAIN CONTENT -->
     <main class="container">
-        <!-- Messages -->
+        <!-- MESSAGES -->
         {% if messages %}
         <div class="messages">
             {% for message in messages %}
@@ -486,41 +747,49 @@
         </div>
         {% endif %}
         
+        <!-- PAGE HEADER -->
         <div class="page-header">
-            <h2>All Reservations</h2>
-            <p>View and manage all customer reservations in the system</p>
+            <h2><i class="fas fa-calendar-check"></i> All reservations</h2>
+            <p>View and manage all customer bookings across the fleet</p>
         </div>
         
+        <!-- MAIN CARD -->
         <div class="content-section">
-            <!-- Filter Section -->
+            <!-- FILTER SECTION -->
             <div class="filter-section">
-                <div class="filter-label">Filter by Status:</div>
+                <div class="filter-label">
+                    <i class="fas fa-filter"></i> Filter by status:
+                </div>
                 <div class="filter-buttons">
                     <a href="{% url 'all_reservations' %}" 
                        class="filter-btn {% if not status_filter %}active{% endif %}">
-                        All ({{ reservations.count }})
+                        All <span style="opacity: 0.8; margin-left: 0.2rem;">({{ reservations.count }})</span>
                     </a>
                     <a href="{% url 'all_reservations' %}?status=pending" 
                        class="filter-btn {% if status_filter == 'pending' %}active{% endif %}">
-                        Pending
+                        <i class="fas fa-clock"></i> Pending
                     </a>
                     <a href="{% url 'all_reservations' %}?status=approved" 
                        class="filter-btn {% if status_filter == 'approved' %}active{% endif %}">
-                        Approved
+                        <i class="fas fa-check-circle"></i> Approved
                     </a>
                     <a href="{% url 'all_reservations' %}?status=rejected" 
                        class="filter-btn {% if status_filter == 'rejected' %}active{% endif %}">
-                        Rejected
+                        <i class="fas fa-times-circle"></i> Rejected
                     </a>
                     <a href="{% url 'all_reservations' %}?status=completed" 
                        class="filter-btn {% if status_filter == 'completed' %}active{% endif %}">
-                        Completed
+                        <i class="fas fa-check-double"></i> Completed
+                    </a>
+                    <a href="{% url 'all_reservations' %}?status=cancelled" 
+                       class="filter-btn {% if status_filter == 'cancelled' %}active{% endif %}">
+                        <i class="fas fa-ban"></i> Cancelled
                     </a>
                 </div>
             </div>
             
             <div class="section-title">
-                <h3><i class="fas fa-calendar-check"></i> Reservation List</h3>
+                <h3><i class="fas fa-list"></i> Reservation list</h3>
                 <span>Total: {{ reservations.count }}</span>
             </div>
             
@@ -528,10 +797,10 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>Booking ID</th>
                             <th>Customer</th>
-                            <th>Car</th>
-                            <th>Dates</th>
+                            <th>Vehicle</th>
+                            <th>Rental period</th>
                             <th>Amount</th>
                             <th>Payment</th>
                             <th>Status</th>
@@ -541,31 +810,54 @@
                     <tbody>
                         {% for reservation in reservations %}
                         <tr>
-                            <td><strong>#{{ reservation.id }}</strong></td>
                             <td>
-                                <div>{{ reservation.customer.username }}</div>
-                                <small style="color: #666;">{{ reservation.contact_email }}</small>
+                                <strong>#{{ reservation.id }}</strong>
+                                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.2rem;">
+                                    {{ reservation.created_at|date:"M d, Y" }}
+                                </div>
                             </td>
-                            <td>{{ reservation.car.brand }} {{ reservation.car.name }}</td>
                             <td>
-                                <div>{{ reservation.start_date|date:"M d, Y" }}</div>
-                                <div>to {{ reservation.end_date|date:"M d, Y" }}</div>
-                                <small style="color: #666;">Pickup: {{ reservation.pickup_time }}</small>
+                                <div class="customer-info">
+                                    <div class="customer-avatar">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="customer-details">
+                                        <span class="customer-name">{{ reservation.customer.username }}</span>
+                                        <span class="customer-email">{{ reservation.contact_email|default:reservation.customer.email|truncatechars:24 }}</span>
+                                    </div>
+                                </div>
                             </td>
-                            <td><strong>₱{{ reservation.total_amount }}</strong></td>
                             <td>
-                                <span class="status-badge {% if reservation.payment_status == 'paid' %}status-completed{% else %}status-pending{% endif %}">
-                                    {{ reservation.payment_status|title }}
+                                <div class="car-info">
+                                    {{ reservation.car.brand }} {{ reservation.car.name }}
+                                    <small><i class="fas fa-bolt"></i> {{ reservation.car.get_transmission_display|default:"Auto" }} · <i class="fas fa-gas-pump"></i> {{ reservation.car.get_fuel_type_display|default:"Petrol" }}</small>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="date-info">
+                                    <span class="date-range">{{ reservation.start_date|date:"M d, Y" }}</span>
+                                    <span style="color: var(--text-muted); font-size: 0.75rem;">→</span>
+                                    <span class="date-range">{{ reservation.end_date|date:"M d, Y" }}</span>
+                                    <span class="date-detail"><i class="fas fa-clock"></i> {{ reservation.pickup_time|default:"10:00 AM" }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="amount">₱{{ reservation.total_amount|floatformat:2 }}</span>
+                                <div style="font-size: 0.7rem; color: var(--text-muted);">₱{{ reservation.car.price_per_day }}/day</div>
+                            </td>
+                            <td>
+                                <span class="payment-badge {% if reservation.payment_status == 'paid' %}payment-paid{% endif %}">
+                                    {{ reservation.payment_status|default:"pending"|title }}
                                 </span>
                             </td>
                             <td>
-                                <span class="status-badge status-{{ reservation.status }}">
-                                    {{ reservation.status|title }}
+                                <span class="status-badge status-{{ reservation.status|lower }}">
+                                    {{ reservation.get_status_display|default:reservation.status|title }}
                                 </span>
                             </td>
                             <td>
                                 <div class="action-buttons">
-                                    {% if reservation.status == 'pending' %}
+                                    {% if reservation.status|lower == 'pending' %}
                                     <form method="POST" action="{% url 'approve_reservation' reservation.id %}" style="display: inline;">
                                         {% csrf_token %}
                                         <button type="submit" class="btn-action btn-approve" 
@@ -581,9 +873,7 @@
                                         </button>
                                     </form>
                                     {% endif %}
-                                    <a href="{% url 'view_reservation' reservation.id %}" class="btn-action btn-view">
-                                        <i class="fas fa-eye"></i> View
-                                    </a>
+                                   
                                 </div>
                             </td>
                         </tr>
@@ -591,9 +881,12 @@
                         <tr>
                             <td colspan="8">
                                 <div class="empty-state">
-                                    <i class="fas fa-calendar"></i>
+                                    <i class="fas fa-calendar-times"></i>
                                     <h3>No reservations found</h3>
-                                    <p>{% if status_filter %}No {{ status_filter }} reservations{% else %}No reservations in the system{% endif %}</p>
+                                    <p>{% if status_filter %}No {{ status_filter }} reservations in the system{% else %}No reservations have been made yet{% endif %}</p>
+                                    <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">
+                                        <i class="fas fa-tachometer-alt"></i> Return to dashboard
+                                    </a>
                                 </div>
                             </td>
                         </tr>
@@ -602,21 +895,21 @@
                 </table>
             </div>
             
-            <!-- Back to Dashboard -->
-            <div style="text-align: center; margin-top: 30px;">
-                <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary" style="padding: 10px 30px;">
-                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+            <!-- BACK TO DASHBOARD -->
+            <div class="back-link">
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to dashboard
                 </a>
             </div>
         </div>
     </main>
     
-    <!-- Footer -->
+    <!-- FOOTER – consistent with Car Management System -->
     <footer class="main-footer">
         <div class="footer-container">
             <div class="footer-col">
-                <h4>Premium Car Rental Admin</h4>
-                <p>Management dashboard for monitoring and controlling car rental operations.</p>
+                <h4>Car Moto Admin</h4>
+                <p>Management dashboard for monitoring and controlling fleet operations.</p>
                 <div class="social-links">
                     <a href="#"><i class="fab fa-facebook-f"></i></a>
                     <a href="#"><i class="fab fa-twitter"></i></a>
@@ -625,37 +918,31 @@
             </div>
             
             <div class="footer-col">
-                <h4>Admin Links</h4>
-                <p><a href="{% url 'admin_dashboard' %}" style="color: #aaa;">Dashboard</a></p>
-                <p><a href="{% url 'car_list' %}" style="color: #aaa;">Manage Cars</a></p>
-                <p><a href="{% url 'all_reservations' %}" style="color: #aaa;">All Reservations</a></p>
-                <p><a href="#" style="color: #aaa;">System Settings</a></p>
+                <h4>Admin links</h4>
+                <p><a href="{% url 'admin_dashboard' %}">Dashboard</a></p>
+                <p><a href="{% url 'car_list' %}">Manage fleet</a></p>
+                <p><a href="{% url 'all_reservations' %}">All reservations</a></p>
+                <p><a href="#">System settings</a></p>
             </div>
             
             <div class="footer-col">
                 <h4>Support</h4>
-                <p><i class="fas fa-envelope"></i> <a href="mailto:admin@premiumcarrental.com" style="color: #aaa;">admin@premiumcarrental.com</a></p>
-                <p><i class="fas fa-phone"></i> <a href="tel:+63281234567" style="color: #aaa;">(02) 8123-4567 ext. 100</a></p>
-                <p><i class="fas fa-shield-alt"></i> Secure Admin Portal</p>
+                <p><i class="fas fa-envelope"></i> <a href="mailto:admin@carmanager.ph">admin@carmanager.ph</a></p>
+                <p><i class="fas fa-phone"></i> <a href="tel:+63281234567">+63 (2) 8123 4567 ext. 100</a></p>
+                <p><i class="fas fa-shield-alt"></i> Secure admin portal</p>
             </div>
         </div>
         
         <div class="copyright">
-            &copy; 2024 Premium Car Rental Admin Dashboard. All rights reserved. | v2.1.0
+            © 2024 Car Management System. All rights reserved. | v2.1.0
         </div>
     </footer>
     
     <script>
-        // Add active class to current filter button
+        // Add active class to current filter button (Django already handles this via class active)
         document.addEventListener('DOMContentLoaded', function() {
-            const currentUrl = window.location.href;
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            
-            filterBtns.forEach(btn => {
-                if (btn.href === currentUrl) {
-                    btn.classList.add('active');
-                }
-            });
+            // Additional smooth interactions if needed
+            console.log('All Reservations page loaded');
         });
     </script>
 </body>

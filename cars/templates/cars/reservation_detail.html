@@ -1,0 +1,434 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reservation #{{ reservation.id }} - Car Moto{% endblock %}
+
+{% block extra_css %}
+<style>
+    .detail-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .detail-card {
+        background: var(--card-white);
+        border-radius: 48px;
+        padding: 2.5rem;
+        border: 1px solid var(--border-light);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 2rem;
+    }
+    
+    .detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-light);
+    }
+    
+    .detail-header h1 {
+        color: #0a404b;
+        font-size: 1.8rem;
+        font-weight: 560;
+    }
+    
+    .status-badge-large {
+        display: inline-block;
+        padding: 0.6rem 1.8rem;
+        border-radius: 60px;
+        font-size: 0.85rem;
+        font-weight: 620;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        border: 1px solid transparent;
+    }
+    
+    .status-pending {
+        background: var(--warning-bg);
+        color: var(--warning);
+        border-color: #eadbc2;
+    }
+    
+    .status-approved {
+        background: var(--success-bg);
+        color: var(--success);
+        border-color: #c2d9dd;
+    }
+    
+    .status-rejected {
+        background: var(--danger-bg);
+        color: var(--danger);
+        border-color: #e6cfc7;
+    }
+    
+    .status-completed {
+        background: #d1ecf1;
+        color: #0c5460;
+        border-color: #b8d9de;
+    }
+    
+    .status-cancelled {
+        background: #e2e3e5;
+        color: #383d41;
+        border-color: #cbccce;
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .info-section {
+        background: #f5fafc;
+        padding: 1.5rem;
+        border-radius: 24px;
+        border: 1px solid var(--border-light);
+    }
+    
+    .info-section h3 {
+        color: var(--primary-deep);
+        font-size: 1rem;
+        font-weight: 620;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-soft);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .info-row {
+        display: flex;
+        margin-bottom: 0.8rem;
+    }
+    
+    .info-label {
+        flex: 0 0 100px;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+    }
+    
+    .info-value {
+        flex: 1;
+        color: var(--text-dark);
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+    
+    .car-detail-card {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+        background: white;
+        padding: 1.5rem;
+        border-radius: 24px;
+        border: 1px solid var(--border-light);
+        margin-bottom: 2rem;
+    }
+    
+    .car-image-large {
+        width: 120px;
+        height: 120px;
+        border-radius: 24px;
+        background: linear-gradient(145deg, #e9f1f5, #dfecf0);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-soft);
+        font-size: 2.5rem;
+        overflow: hidden;
+        flex-shrink: 0;
+        border: 1px solid var(--border-light);
+    }
+    
+    .car-image-large img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .car-info-large h2 {
+        color: #0a404b;
+        font-size: 1.6rem;
+        font-weight: 560;
+        margin-bottom: 0.5rem;
+    }
+    
+    .car-specs {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .car-spec {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+    
+    .charges-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+    }
+    
+    .charges-table tr {
+        border-bottom: 1px solid var(--border-light);
+    }
+    
+    .charges-table td {
+        padding: 1rem 0.5rem;
+        color: var(--text-dark);
+    }
+    
+    .charges-table .total-row {
+        font-weight: 700;
+        color: var(--primary-deep);
+        font-size: 1.1rem;
+        border-bottom: none;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        justify-content: flex-end;
+    }
+    
+    .special-requests {
+        margin-top: 1.5rem;
+        padding: 1.5rem;
+        background: #fef3e9;
+        border-left: 4px solid var(--warning);
+        border-radius: 16px;
+        color: var(--warning);
+    }
+    
+    .btn-back {
+        background: transparent;
+        color: var(--primary-deep);
+        border: 1.5px solid var(--border-soft);
+        padding: 0.6rem 1.6rem;
+        border-radius: var(--radius-btn);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: var(--transition-smooth);
+        margin-bottom: 1rem;
+    }
+    
+    .btn-back:hover {
+        border-color: var(--primary-deep);
+        background: var(--primary-mist);
+    }
+    
+    .btn-cancel {
+        background: var(--danger);
+        color: white;
+        border: none;
+        padding: 0.6rem 1.6rem;
+        border-radius: var(--radius-btn);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: var(--transition-smooth);
+        cursor: pointer;
+        font-weight: 540;
+    }
+    
+    .btn-cancel:hover {
+        background: #8a5a4f;
+        transform: translateY(-2px);
+    }
+    
+    .btn-receipt {
+        background: var(--success);
+        color: white;
+        border: none;
+        padding: 0.6rem 1.6rem;
+        border-radius: var(--radius-btn);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: var(--transition-smooth);
+        font-weight: 540;
+    }
+    
+    .btn-receipt:hover {
+        background: #1f707c;
+        transform: translateY(-2px);
+    }
+    
+    .booking-id {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin-top: 0.3rem;
+    }
+    
+    @media (max-width: 768px) {
+        .car-detail-card {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .info-row {
+            flex-direction: column;
+        }
+        
+        .info-label {
+            flex: none;
+            margin-bottom: 0.2rem;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .detail-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <a href="{% url 'my_reservations' %}" class="btn-back">
+        <i class="fas fa-arrow-left"></i> Back to My Reservations
+    </a>
+    
+    <div class="detail-card">
+        <div class="detail-header">
+            <div>
+                <h1>Reservation Details</h1>
+                <div class="booking-id">Booking ID: #{{ reservation.id }}</div>
+            </div>
+            <span class="status-badge-large status-{{ reservation.status|lower }}">
+                {{ reservation.get_status_display|default:reservation.status|title }}
+            </span>
+        </div>
+        
+        <!-- Car Information - DISPLAY ONLY -->
+        <div class="car-detail-card">
+            <div class="car-image-large">
+                {% if reservation.car.image %}
+                    <img src="{{ reservation.car.image.url }}" alt="{{ reservation.car.brand }} {{ reservation.car.name }}">
+                {% else %}
+                    <i class="fas fa-car"></i>
+                {% endif %}
+            </div>
+            <div class="car-info-large">
+                <h2>{{ reservation.car.brand }} {{ reservation.car.name }}</h2>
+                <div class="car-specs">
+                    <span class="car-spec"><i class="fas fa-bolt"></i> {{ reservation.car.get_transmission_display|default:"Automatic" }}</span>
+                    <span class="car-spec"><i class="fas fa-users"></i> {{ reservation.car.seats|default:"4" }} seats</span>
+                    <span class="car-spec"><i class="fas fa-gas-pump"></i> {{ reservation.car.fuel_type|default:"Petrol" }}</span>
+                    <span class="car-spec"><i class="fas fa-tag"></i> ₱{{ reservation.car.price_per_day|floatformat:2 }}/day</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Reservation Information - DISPLAY ONLY -->
+        <div class="info-grid">
+            <div class="info-section">
+                <h3><i class="fas fa-calendar-alt"></i> Rental Period</h3>
+                <div class="info-row">
+                    <span class="info-label">Pick-up:</span>
+                    <span class="info-value">
+                        <strong>{{ reservation.start_date|date:"F d, Y" }}</strong><br>
+                        <small style="color: var(--text-muted);">{{ reservation.pickup_time|default:"10:00 AM" }}</small>
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Return:</span>
+                    <span class="info-value">
+                        <strong>{{ reservation.end_date|date:"F d, Y" }}</strong><br>
+                        <small style="color: var(--text-muted);">{{ reservation.dropoff_time|default:"10:00 AM" }}</small>
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Duration:</span>
+                    <span class="info-value"><strong>{{ days }}</strong> day{{ days|pluralize }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Booked on:</span>
+                    <span class="info-value">{{ reservation.created_at|date:"F d, Y \a\t H:i" }}</span>
+                </div>
+            </div>
+            
+            <div class="info-section">
+                <h3><i class="fas fa-user"></i> Customer Information</h3>
+                <div class="info-row">
+                    <span class="info-label">Name:</span>
+                    <span class="info-value">{{ reservation.customer.get_full_name|default:reservation.customer.username }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Email:</span>
+                    <span class="info-value">{{ reservation.contact_email|default:reservation.customer.email }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Phone:</span>
+                    <span class="info-value">{{ reservation.contact_phone|default:"Not provided" }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Payment Information - DISPLAY ONLY -->
+        <div class="info-section" style="margin-top: 1rem;">
+            <h3><i class="fas fa-receipt"></i> Payment Summary</h3>
+            <table class="charges-table">
+                <tr>
+                    <td>Vehicle Rental ({{ days }} day{{ days|pluralize }})</td>
+                    <td style="text-align: right;">₱{{ daily_rate|floatformat:2 }} × {{ days }} day{{ days|pluralize }}</td>
+                    <td style="text-align: right;"><strong>₱{{ subtotal|floatformat:2 }}</strong></td>
+                </tr>
+                <tr class="total-row">
+                    <td colspan="2" style="text-align: right;">Total Amount:</td>
+                    <td style="text-align: right;"><strong>₱{{ reservation.total_amount|floatformat:2 }}</strong></td>
+                </tr>
+            </table>
+        </div>
+        
+        <!-- Special Requests - DISPLAY ONLY -->
+        {% if reservation.special_requests %}
+        <div class="special-requests">
+            <strong><i class="fas fa-message"></i> Special Requests:</strong>
+            <p style="margin-top: 0.5rem; color: var(--warning);">{{ reservation.special_requests }}</p>
+        </div>
+        {% endif %}
+        
+        <!-- Action Buttons - CANCEL or RECEIPT only, NO EDIT -->
+        <div class="action-buttons">
+            {% if reservation.status|lower == 'pending' %}
+            <form method="POST" action="{% url 'cancel_reservation' reservation.id %}" style="display: inline;" onsubmit="return confirm('Are you sure you want to cancel this reservation? This action cannot be undone.')">
+                {% csrf_token %}
+                <button type="submit" class="btn-cancel">
+                    <i class="fas fa-times"></i> Cancel Reservation
+                </button>
+            </form>
+            {% endif %}
+            
+            {% if reservation.status|lower == 'approved' or reservation.status|lower == 'completed' %}
+            <a href="{% url 'download_receipt' reservation.id %}" class="btn-receipt">
+                <i class="fas fa-receipt"></i> Download Receipt
+            </a>
+            {% endif %}
+            
+            <a href="{% url 'my_reservations' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

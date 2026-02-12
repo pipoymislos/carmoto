@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Moto - Receipt #{{ reservation.id }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+            @frame footer {
+                -pdf-frame-content: footerContent;
+                bottom: 1cm;
+                margin-left: 1cm;
+                margin-right: 1cm;
+                height: 1.5cm;
+            }
+        }
+        
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            color: #1e3b44;
+            line-height: 1.4;
+            font-size: 11pt;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .receipt-container {
+            max-width: 100%;
+            padding: 20px 0;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #1a4f5a;
+        }
+        
+        .company-info h1 {
+            color: #1a4f5a;
+            margin: 0;
+            font-size: 28pt;
+            font-weight: 500;
+            letter-spacing: -0.5px;
+        }
+        
+        .company-info p {
+            margin: 5px 0;
+            color: #547781;
+            font-size: 9pt;
+        }
+        
+        .receipt-title {
+            text-align: right;
+        }
+        
+        .receipt-title h2 {
+            color: #1a4f5a;
+            margin: 0;
+            font-size: 20pt;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .receipt-title p {
+            color: #547781;
+            margin: 5px 0 0;
+            font-size: 10pt;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background-color: {% if reservation.status == 'approved' %}#e3f0ee{% else %}#d1ecf1{% endif %};
+            color: {% if reservation.status == 'approved' %}#1a5a65{% else %}#0c5460{% endif %};
+            border-radius: 20px;
+            font-size: 9pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+        
+        .info-grid {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            background: #f5fafc;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .info-block {
+            flex: 1;
+        }
+        
+        .info-block h3 {
+            color: #1a4f5a;
+            font-size: 11pt;
+            margin: 0 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #d0e2e8;
+        }
+        
+        .info-block p {
+            margin: 5px 0;
+            color: #1e3b44;
+        }
+        
+        .info-block .label {
+            color: #547781;
+            font-size: 9pt;
+        }
+        
+        .car-details {
+            margin: 30px 0;
+        }
+        
+        .car-details h3 {
+            color: #1a4f5a;
+            font-size: 11pt;
+            margin-bottom: 15px;
+        }
+        
+        .car-specs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            background: #fff;
+            border: 1px solid #d0e2e8;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .spec-item {
+            flex: 1 1 45%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .spec-label {
+            color: #547781;
+            min-width: 80px;
+        }
+        
+        .spec-value {
+            color: #1a4f5a;
+            font-weight: bold;
+        }
+        
+        .charges-table {
+            margin: 30px 0;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        
+        .charges-table th {
+            background: #1a4f5a;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-size: 10pt;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .charges-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e2edf1;
+            color: #1e3b44;
+        }
+        
+        .charges-table .total-row {
+            background: #f5fafc;
+            font-weight: bold;
+        }
+        
+        .total-section {
+            margin-top: 30px;
+            text-align: right;
+            padding-top: 20px;
+            border-top: 2px solid #1a4f5a;
+        }
+        
+        .total-amount {
+            font-size: 16pt;
+            color: #1a4f5a;
+            font-weight: bold;
+        }
+        
+        .terms {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px dashed #d0e2e8;
+            font-size: 8pt;
+            color: #547781;
+        }
+        
+        .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            color: #547781;
+            font-size: 8pt;
+        }
+        
+        .special-requests {
+            margin-top: 30px;
+            padding: 15px;
+            background: #fef3e9;
+            border-left: 4px solid #856f4c;
+            color: #856f4c;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="company-info">
+                <h1>🚗 Car Moto</h1>
+                <p>{{ company_address }}</p>
+                <p>Tel: {{ company_phone }} | Email: {{ company_email }}</p>
+                <p>VAT Reg: {{ company_vat }}</p>
+            </div>
+            <div class="receipt-title">
+                <h2>OFFICIAL RECEIPT</h2>
+                <p>Receipt #: RCP-{{ reservation.id }}-{{ receipt_date|date:"Ymd" }}</p>
+                <p>Date: {{ receipt_date|date:"F d, Y H:i" }}</p>
+                <span class="status-badge">{{ reservation.get_status_display|upper }}</span>
+            </div>
+        </div>
+        
+        <!-- Customer & Reservation Info -->
+        <div class="info-grid">
+            <div class="info-block">
+                <h3>CUSTOMER DETAILS</h3>
+                <p><strong>{{ reservation.customer.get_full_name|default:reservation.customer.username }}</strong></p>
+                <p><span class="label">Email:</span> {{ reservation.contact_email|default:reservation.customer.email }}</p>
+                <p><span class="label">Phone:</span> {{ reservation.contact_phone|default:"—" }}</p>
+            </div>
+            
+            <div class="info-block">
+                <h3>RESERVATION DETAILS</h3>
+                <p><span class="label">Booking ID:</span> #{{ reservation.id }}</p>
+                <p><span class="label">Booked on:</span> {{ reservation.created_at|date:"F d, Y" }}</p>
+                <p><span class="label">Payment Status:</span> {{ reservation.payment_status|default:"Pending" }}</p>
+            </div>
+            
+            <div class="info-block">
+                <h3>RENTAL PERIOD</h3>
+                <p><strong>From:</strong> {{ reservation.start_date|date:"F d, Y" }}</p>
+                <p><strong>To:</strong> {{ reservation.end_date|date:"F d, Y" }}</p>
+                <p><span class="label">Duration:</span> {{ days }} day{{ days|pluralize }}</p>
+                <p><span class="label">Pickup time:</span> {{ reservation.pickup_time|default:"10:00 AM" }}</p>
+            </div>
+        </div>
+        
+        <!-- Car Details -->
+        <div class="car-details">
+            <h3>VEHICLE INFORMATION</h3>
+            <div class="car-specs">
+                <div class="spec-item">
+                    <span class="spec-label">Model:</span>
+                    <span class="spec-value">{{ reservation.car.brand }} {{ reservation.car.name }}</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">Year:</span>
+                    <span class="spec-value">{{ reservation.car.year|default:"2024" }}</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">Transmission:</span>
+                    <span class="spec-value">{{ reservation.car.get_transmission_display|default:"Automatic" }}</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">Fuel Type:</span>
+                    <span class="spec-value">{{ reservation.car.fuel_type|default:"Petrol" }}</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">Seats:</span>
+                    <span class="spec-value">{{ reservation.car.seats|default:"5" }} seats</span>
+                </div>
+                <div class="spec-item">
+                    <span class="spec-label">License Plate:</span>
+                    <span class="spec-value">{{ reservation.car.license_plate|default:"N/A" }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Charges Breakdown -->
+        <h3>CHARGES BREAKDOWN</h3>
+        <table class="charges-table">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Duration</th>
+                    <th>Rate/Day</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Vehicle Rental - {{ reservation.car.brand }} {{ reservation.car.name }}</td>
+                    <td>{{ days }} day{{ days|pluralize }}</td>
+                    <td>₱{{ daily_rate|floatformat:2 }}</td>
+                    <td>₱{{ subtotal|floatformat:2 }}</td>
+                </tr>
+                
+                {% if insurance_fee %}
+                <tr>
+                    <td>Insurance Coverage</td>
+                    <td>{{ days }} day{{ days|pluralize }}</td>
+                    <td>₱{{ insurance_fee_per_day|default:"0.00" }}</td>
+                    <td>₱{{ insurance_fee|floatformat:2 }}</td>
+                </tr>
+                {% endif %}
+                
+                {% if extra_fees %}
+                <tr>
+                    <td>Extra Fees</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>₱{{ extra_fees|floatformat:2 }}</td>
+                </tr>
+                {% endif %}
+                
+                <tr class="total-row">
+                    <td colspan="3" style="text-align: right;"><strong>TOTAL AMOUNT</strong></td>
+                    <td><strong>₱{{ reservation.total_amount|floatformat:2 }}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <!-- Special Requests -->
+        {% if reservation.special_requests %}
+        <div class="special-requests">
+            <strong><i>📝 SPECIAL REQUESTS</i></strong><br>
+            {{ reservation.special_requests }}
+        </div>
+        {% endif %}
+        
+        <!-- Total Section -->
+        <div class="total-section">
+            <div style="font-size: 12pt; color: #547781; margin-bottom: 5px;">
+                Amount Due:
+            </div>
+            <div class="total-amount">
+                ₱{{ reservation.total_amount|floatformat:2 }}
+            </div>
+            <div style="margin-top: 10px; color: #547781;">
+                Payment Terms: Due upon pickup
+            </div>
+        </div>
+        
+        <!-- Terms & Conditions -->
+        <div class="terms">
+            <strong>TERMS AND CONDITIONS:</strong>
+            <ol style="margin-top: 10px; padding-left: 20px;">
+                <li>This receipt is valid with booking ID and valid government ID presented at pickup.</li>
+                <li>Vehicle inspection required before and after rental period.</li>
+                <li>Fuel policy: Full-to-Full (return with same fuel level).</li>
+                <li>Late return charges apply at ₱500/hour beyond scheduled return time.</li>
+                <li>Damage liability subject to inspection and assessment.</li>
+            </ol>
+            <p style="margin-top: 15px;">
+                This is a computer-generated receipt. No signature required.
+            </p>
+        </div>
+        
+        <!-- Footer -->
+        <div id="footerContent" class="footer">
+            <p>Page 1 of 1 | Generated on {{ receipt_date|date:"F d, Y \a\t H:i" }} | Car Moto Fleet Management System</p>
+            <p>Thank you for choosing Car Moto! ⚡</p>
+        </div>
+    </div>
+</body>
+</html>

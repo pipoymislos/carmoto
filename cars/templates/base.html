@@ -7,12 +7,7 @@
     <!-- Font Awesome 6 – clean icons, no emoji -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* -------------------------------------------------------------
-           BOOKING PAGE – REDESIGNED, COHESIVE, PREMIUM
-           Complete visual harmony with fleet management & auth system.
-           No emoji, no purple gradients, calm teal palette.
-           All Django functionality preserved – 100% deploy ready.
-        ------------------------------------------------------------- */
+        /* [Keep all your existing CSS styles exactly as they are] */
         * {
             margin: 0;
             padding: 0;
@@ -53,7 +48,6 @@
             position: relative;
         }
 
-        /* Soft atmosphere – same as fleet & auth */
         body::before {
             content: '';
             position: fixed;
@@ -86,7 +80,6 @@
             box-shadow: 0 32px 48px -24px rgba(26, 90, 100, 0.2);
         }
 
-        /* ----- CAR INFO PANEL – refined gradient, cohesive teal ------- */
         .car-info-section {
             flex: 1;
             background: linear-gradient(145deg, #1a4f5a 0%, #20616b 100%);
@@ -207,7 +200,6 @@
             padding-left: 1.2rem;
         }
 
-        /* ----- FORM PANEL – clean, spacious, premium ----------------- */
         .form-section {
             flex: 1;
             padding: 3rem 2.8rem;
@@ -288,7 +280,6 @@
             border-color: #b7d6df;
         }
 
-        /* price summary – refined, cohesive */
         .price-summary {
             background: #f3f9fc;
             padding: 1.8rem 2rem;
@@ -378,7 +369,6 @@
             border-bottom-color: var(--primary-deep);
         }
 
-        /* error styling – matches auth system */
         .errorlist {
             list-style: none;
             margin-top: 0.5rem;
@@ -395,7 +385,6 @@
             font-weight: 470;
         }
 
-        /* responsive */
         @media (max-width: 1000px) {
             .booking-container {
                 flex-direction: column;
@@ -424,13 +413,51 @@
         ::selection { background: rgba(26,79,90,0.08); color: #0a404b; }
         :focus-visible { outline: 3px solid rgba(26,79,90,0.2); outline-offset: 3px; border-radius: 30px; }
         
-        /* no emoji fallback – using font awesome instead */
         .fa, .fas, .far, .fab { font-variant-emoji: none; }
+        
+        /* Availability warning styles */
+        .availability-warning {
+            background: #fef3e9;
+            border-left: 4px solid #856f4c;
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #856f4c;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .availability-warning i {
+            font-size: 1.2rem;
+        }
+        
+        .unavailable-message {
+            background: #fef3f0;
+            border-left: 4px solid #794b41;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #794b41;
+            text-align: center;
+        }
+        
+        .unavailable-message i {
+            font-size: 2rem;
+            margin-bottom: 0.8rem;
+        }
+        
+        .date-hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+            margin-left: 0.5rem;
+        }
     </style>
 </head>
 <body>
     <div class="booking-container">
-        <!-- CAR INFORMATION PANEL – premium, cohesive -->
+        <!-- CAR INFORMATION PANEL -->
         <div class="car-info-section">
             <div class="car-image">
                 {% if car.image %}
@@ -445,15 +472,15 @@
             <div class="car-specs">
                 <div class="spec-item">
                     <div class="spec-label">Transmission</div>
-                    <div class="spec-value">{{ car.get_transmission_display }}</div>
+                    <div class="spec-value">{{ car.get_transmission_display|default:"Automatic" }}</div>
                 </div>
                 <div class="spec-item">
                     <div class="spec-label">Fuel Type</div>
-                    <div class="spec-value">{{ car.get_fuel_type_display }}</div>
+                    <div class="spec-value">{{ car.get_fuel_type_display|default:"Petrol" }}</div>
                 </div>
                 <div class="spec-item">
                     <div class="spec-label">Seats</div>
-                    <div class="spec-value">{{ car.seats }}</div>
+                    <div class="spec-value">{{ car.seats|default:"4" }}</div>
                 </div>
                 <div class="spec-item">
                     <div class="spec-label">Status</div>
@@ -462,82 +489,76 @@
             </div>
             
             <div class="car-price">
-                ₱{{ car.price_per_day }} <span>/ day</span>
+                ₱{{ car.price_per_day|floatformat:2 }} <span>/ day</span>
             </div>
             
             <p class="car-description">{{ car.description|default:"Premium vehicle for your comfort and convenience. Fully insured, 24/7 roadside assistance included." }}</p>
         </div>
         
-        <!-- BOOKING FORM – all Django fields preserved, no emoji -->
+        <!-- BOOKING FORM -->
         <div class="form-section">
             <div class="form-header">
                 <h2>Complete your booking</h2>
                 <p>Fill in your details to reserve this vehicle</p>
             </div>
             
-            <form method="POST">
+            <!-- Availability warning will be shown here via JavaScript -->
+            <div id="availability-warning-container"></div>
+            
+            <form method="POST" id="booking-form">
                 {% csrf_token %}
                 
                 <div class="form-row">
                     <div class="form-group">
                         <label><i class="fas fa-envelope" style="margin-right: 0.4rem; color: var(--primary-soft);"></i> Contact Email *</label>
-                        {{ form.contact_email }}
+                        <input type="email" name="contact_email" value="{{ form.contact_email.value|default:request.user.email }}" placeholder="your@email.com" required>
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-phone" style="margin-right: 0.4rem; color: var(--primary-soft);"></i> Contact Phone *</label>
-                        {{ form.contact_phone }}
+                        <input type="text" name="contact_phone" value="{{ form.contact_phone.value|default:'' }}" placeholder="+63 XXX XXX XXXX" required>
                     </div>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
                         <label><i class="fas fa-calendar" style="margin-right: 0.4rem; color: var(--primary-soft);"></i> Pickup Date *</label>
-                        {{ form.start_date }}
+                        <input type="date" name="start_date" id="start_date" value="{{ form.start_date.value|date:'Y-m-d'|default:today }}" min="{{ today }}" required>
+                        <div class="date-hint"><i class="fas fa-info-circle"></i> Pickup at 10:00 AM</div>
                     </div>
                     <div class="form-group">
-                        <label><i class="fas fa-clock" style="margin-right: 0.4rem; color: var(--primary-soft);"></i> Pickup Time *</label>
-                        {{ form.pickup_time }}
+                        <label><i class="fas fa-calendar-check" style="margin-right: 0.4rem; color: var(--primary-soft);"></i> Return Date *</label>
+                        <input type="date" name="end_date" id="end_date" value="{{ form.end_date.value|date:'Y-m-d'|default:'' }}" min="{{ today }}" required>
+                        <div class="date-hint"><i class="fas fa-info-circle"></i> Return at 10:00 AM</div>
                     </div>
                 </div>
                 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label><i class="fas fa-calendar-check" style="margin-right: 0.4rem; color: var(--primary-soft);"></i> Return Date *</label>
-                        {{ form.end_date }}
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-clock" style="margin-right: 0.4rem; color: var(--primary-soft);"></i> Return Time *</label>
-                        {{ form.dropoff_time }}
-                    </div>
-                </div>
+                <!-- Hidden time fields - set default values -->
+                <input type="hidden" name="pickup_time" value="10:00 AM">
+                <input type="hidden" name="dropoff_time" value="10:00 AM">
                 
                 <div class="form-group">
                     <label><i class="fas fa-message" style="margin-right: 0.4rem; color: var(--primary-soft);"></i> Special Requests</label>
-                    {{ form.special_requests }}
+                    <textarea name="special_requests" placeholder="Any special requirements? (e.g., baby seat, GPS, etc.)">{{ form.special_requests.value|default:'' }}</textarea>
                 </div>
                 
-                <!-- Price Calculation – dynamic, preserved -->
+                <!-- Price Calculation -->
                 <div class="price-summary">
                     <div class="price-item">
                         <span>Daily rate</span>
-                        <span>₱{{ car.price_per_day }} × <span id="days-count">1</span> day<span id="days-plural">s</span></span>
+                        <span>₱{{ car.price_per_day|floatformat:2 }} × <span id="days-count">1</span> day<span id="days-plural">s</span></span>
                     </div>
                     <div class="price-item">
                         <span>Subtotal</span>
-                        <span id="subtotal">₱{{ car.price_per_day }}</span>
-                    </div>
-                    <div class="price-item">
-                        <span>Service fee</span>
-                        <span>₱500</span>
+                        <span id="subtotal">₱{{ car.price_per_day|floatformat:2 }}</span>
                     </div>
                     <div class="price-item price-total">
                         <span>Total amount</span>
-                        <span id="total-amount">₱{{ car.price_per_day|add:500 }}</span>
+                        <span id="total-amount">₱{{ car.price_per_day|floatformat:2 }}</span>
                     </div>
                 </div>
                 
-                <button type="submit" class="btn-submit">
-                    <i class="fas fa-calendar-check"></i> Confirm booking – ₱<span id="submit-total">{{ car.price_per_day|add:500 }}</span>
+                <button type="submit" class="btn-submit" id="submit-btn">
+                    <i class="fas fa-calendar-check"></i> Confirm booking – ₱<span id="submit-total">{{ car.price_per_day|floatformat:2 }}</span>
                 </button>
                 
                 <a href="{% url 'car_list' %}" class="btn-back">
@@ -551,17 +572,19 @@
         (function() {
             'use strict';
             
+            const pricePerDay = {{ car.price_per_day }};
+            const carId = {{ car.id }};
+            let isAvailable = true;
+            
             function calculatePrice() {
-                const startDate = document.querySelector('input[name="start_date"]');
-                const endDate = document.querySelector('input[name="end_date"]');
-                const pricePerDay = {{ car.price_per_day }};
-                const serviceFee = 500;
+                const startDate = document.getElementById('start_date');
+                const endDate = document.getElementById('end_date');
                 
                 if (startDate && endDate && startDate.value && endDate.value) {
                     const start = new Date(startDate.value);
                     const end = new Date(endDate.value);
                     
-                    // Calculate days – inclusive of both dates
+                    // Calculate days - inclusive of both dates
                     const timeDiff = end - start;
                     const days = Math.max(1, Math.ceil(timeDiff / (1000 * 60 * 60 * 24)) + 1);
                     
@@ -570,7 +593,7 @@
                     if (daysPlural) daysPlural.textContent = days === 1 ? '' : 's';
                     
                     const subtotal = pricePerDay * days;
-                    const total = subtotal + serviceFee;
+                    const total = subtotal;
                     
                     document.getElementById('days-count').textContent = days;
                     document.getElementById('subtotal').textContent = '₱' + subtotal.toFixed(2);
@@ -578,18 +601,49 @@
                     document.getElementById('submit-total').textContent = total.toFixed(2);
                 }
             }
-
+            
+            function checkAvailability() {
+                const startDate = document.getElementById('start_date');
+                const endDate = document.getElementById('end_date');
+                const container = document.getElementById('availability-warning-container');
+                const submitBtn = document.getElementById('submit-btn');
+                
+                if (startDate.value && endDate.value) {
+                    // Make AJAX call to check availability
+                    fetch(`/check-availability/?car_id=${carId}&start_date=${startDate.value}&end_date=${endDate.value}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.available) {
+                                container.innerHTML = '';
+                                isAvailable = true;
+                                submitBtn.disabled = false;
+                                submitBtn.style.opacity = '1';
+                                submitBtn.style.cursor = 'pointer';
+                            } else {
+                                container.innerHTML = `
+                                    <div class="availability-warning">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        <strong>Vehicle not available for selected dates.</strong> Please choose different dates.
+                                    </div>
+                                `;
+                                isAvailable = false;
+                                submitBtn.disabled = true;
+                                submitBtn.style.opacity = '0.5';
+                                submitBtn.style.cursor = 'not-allowed';
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                }
+            }
+            
             // Initialize date inputs
-            const startInput = document.querySelector('input[name="start_date"]');
-            const endInput = document.querySelector('input[name="end_date"]');
+            const startInput = document.getElementById('start_date');
+            const endInput = document.getElementById('end_date');
             
             if (startInput && endInput) {
                 const today = new Date().toISOString().split('T')[0];
                 startInput.min = today;
                 endInput.min = today;
-                
-                startInput.addEventListener('change', calculatePrice);
-                endInput.addEventListener('change', calculatePrice);
                 
                 // Set default values: today and tomorrow
                 if (!startInput.value) {
@@ -598,10 +652,52 @@
                     tomorrow.setDate(tomorrow.getDate() + 1);
                     endInput.value = tomorrow.toISOString().split('T')[0];
                 }
+                
+                startInput.addEventListener('change', function() {
+                    calculatePrice();
+                    checkAvailability();
+                    
+                    // Ensure end date is not before start date
+                    if (endInput.value && startInput.value > endInput.value) {
+                        const nextDay = new Date(startInput.value);
+                        nextDay.setDate(nextDay.getDate() + 1);
+                        endInput.value = nextDay.toISOString().split('T')[0];
+                    }
+                });
+                
+                endInput.addEventListener('change', function() {
+                    calculatePrice();
+                    checkAvailability();
+                    
+                    // Ensure end date is not before start date
+                    if (startInput.value && endInput.value < startInput.value) {
+                        endInput.value = startInput.value;
+                    }
+                });
             }
-
-            // Initial calculation
+            
+            // Form validation
+            const form = document.getElementById('booking-form');
+            form.addEventListener('submit', function(e) {
+                if (!isAvailable) {
+                    e.preventDefault();
+                    alert('This vehicle is not available for the selected dates. Please choose different dates.');
+                    return false;
+                }
+                
+                const phone = document.querySelector('input[name="contact_phone"]').value;
+                if (!phone.trim()) {
+                    e.preventDefault();
+                    alert('Please enter your contact phone number.');
+                    return false;
+                }
+                
+                return true;
+            });
+            
+            // Initial calculations
             calculatePrice();
+            checkAvailability();
         })();
     </script>
 </body>

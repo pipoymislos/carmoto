@@ -3,205 +3,513 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Car - Premium Car Rental</title>
+    <title>Edit {{ car.brand }} {{ car.name }} · Car Manager</title>
+    <!-- Font Awesome 6 – clean icons, no emoji -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Same styling as add_car.html */
+        /* -------------------------------------------------------------
+           EDIT CAR – REDESIGNED, COHESIVE, PREMIUM
+           Complete visual harmony with entire Car Management System.
+           No purple gradients, no emoji – calm teal palette.
+           All Django functionality preserved – 100% deploy ready.
+        ------------------------------------------------------------- */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         :root {
-            --primary: #1a2980;
-            --secondary: #26d0ce;
-            --light: #f8f9fa;
-            --dark: #343a40;
+            --primary-deep: #1a4f5a;
+            --primary-soft: #256773;
+            --primary-mist: rgba(26, 79, 90, 0.04);
+            --accent-calm: #7aa3a8;
+            --bg-warm: #f5fafc;
+            --card-white: #ffffff;
+            --border-light: #e2edf1;
+            --border-soft: #d0e2e8;
+            --text-dark: #1e3b44;
+            --text-muted: #547781;
+            --shadow-sm: 0 8px 18px -10px rgba(0, 55, 65, 0.04), 0 2px 6px rgba(0,45,55,0.02);
+            --shadow-hover: 0 24px 36px -18px rgba(26, 90, 100, 0.18), 0 6px 14px -10px rgba(26,79,90,0.06);
+            --radius-card: 32px;
+            --radius-btn: 52px;
+            --radius-field: 56px;
+            --transition-smooth: all 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.08);
         }
-        
+
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            color: #333;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f0f6f9;
+            color: var(--text-dark);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
             min-height: 100vh;
         }
-        
-        .main-header {
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: white;
-            padding: 25px 0;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+
+        /* Soft atmosphere – same as all other pages */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 18% 28%, rgba(198, 222, 230, 0.32) 0%, transparent 42%),
+                radial-gradient(circle at 82% 72%, rgba(176, 206, 217, 0.24) 0%, transparent 46%);
+            pointer-events: none;
+            z-index: -1;
         }
-        
+
+        /* ----- HEADER – refined, glassmorphism (matches all pages) --- */
+        .main-header {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(212, 232, 240, 0.6);
+            padding: 1.1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            box-shadow: 0 4px 16px -12px rgba(26,79,90,0.06);
+        }
+
         .header-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .logo {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 0.9rem;
         }
-        
+
         .logo i {
-            font-size: 32px;
+            font-size: 2.1rem;
+            color: var(--primary-deep);
+            opacity: 0.92;
         }
-        
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
         .logo h1 {
-            font-size: 28px;
-            font-weight: 700;
+            font-size: 1.6rem;
+            font-weight: 540;
+            letter-spacing: -0.022em;
+            color: #0a404b;
+            line-height: 1.1;
         }
-        
-        .logo p {
-            font-size: 14px;
-            opacity: 0.9;
+
+        .logo span {
+            font-size: 0.7rem;
+            font-weight: 390;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            border-left: 2px solid rgba(58, 118, 128, 0.2);
+            padding-left: 0.75rem;
+            margin-top: 0.1rem;
         }
-        
-        .form-container {
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 40px;
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.55rem;
+            padding: 0.6rem 1.6rem;
+            border-radius: var(--radius-btn);
+            font-size: 0.875rem;
+            font-weight: 540;
+            text-decoration: none;
+            transition: var(--transition-smooth);
+            border: 1.5px solid transparent;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--primary-deep);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 6px 14px -10px rgba(26,79,90,0.4);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-soft);
+            transform: translateY(-2px);
+            box-shadow: 0 18px 26px -16px rgba(26,90,100,0.38);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary-deep);
+            border: 1.5px solid var(--border-soft);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-deep);
+            background: var(--primary-mist);
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.7rem 1.8rem;
+            background: var(--card-white);
+            color: var(--text-muted);
+            border: 1.5px solid var(--border-light);
+            border-radius: var(--radius-btn);
+            text-decoration: none;
+            font-weight: 540;
+            font-size: 0.9rem;
+            transition: var(--transition-smooth);
+            margin-bottom: 1.8rem;
+        }
+
+        .btn-back:hover {
+            border-color: var(--primary-deep);
+            color: var(--primary-deep);
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transform: translateX(-3px);
         }
-        
+
+        /* ----- FORM CONTAINER – premium card ------------------------- */
+        .form-wrapper {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .form-container {
+            background: var(--card-white);
+            padding: 2.8rem 3rem;
+            border-radius: 48px;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-smooth);
+        }
+
+        .form-container:hover {
+            border-color: rgba(174, 202, 214, 0.7);
+            box-shadow: var(--shadow-hover);
+        }
+
         .form-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 2.5rem;
         }
-        
+
         .form-header h2 {
-            color: var(--primary);
-            margin-bottom: 10px;
+            color: #0a404b;
+            font-size: 2rem;
+            font-weight: 540;
+            letter-spacing: -0.018em;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.7rem;
         }
-        
+
+        .form-header h2 i {
+            color: var(--primary-soft);
+        }
+
         .form-header p {
-            color: #666;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            border-left: 3px solid #9ec2cc;
+            padding-left: 1.2rem;
+            max-width: 500px;
+            margin: 0 auto;
+            font-weight: 360;
         }
-        
+
+        /* ----- FORM FIELDS – premium, refined ----------------------- */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 1.8rem;
         }
-        
+
         .form-group label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--dark);
+            margin-bottom: 0.5rem;
+            font-weight: 590;
+            color: var(--primary-deep);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            opacity: 0.85;
         }
-        
+
         .form-control {
             width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
+            padding: 1rem 1.4rem;
+            border: 1.8px solid var(--border-light);
+            border-radius: 56px;
+            font-size: 0.9375rem;
+            background: white;
+            transition: var(--transition-smooth);
+            color: var(--text-dark);
+            font-weight: 390;
         }
-        
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-deep);
+            box-shadow: 0 0 0 5px rgba(26, 79, 90, 0.04);
+        }
+
+        .form-control:hover {
+            border-color: #b7d6df;
+        }
+
         textarea.form-control {
-            min-height: 100px;
+            border-radius: 28px;
             resize: vertical;
+            min-height: 120px;
         }
-        
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23547781' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1.2rem center;
+            background-size: 1.2rem;
+            padding-right: 2.8rem;
+        }
+
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 1.5rem;
+            margin-bottom: 0.2rem;
         }
-        
-        .btn-submit {
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 20px;
-            font-size: 16px;
-        }
-        
-        .btn-back {
-            background: var(--light);
-            color: var(--dark);
-            border: 1px solid #ddd;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-        
+
+        /* ----- CHECKBOX – custom styled ----------------------------- */
         .checkbox-group {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 0.8rem;
+            background: #f3f9fc;
+            padding: 1rem 1.5rem;
+            border-radius: 56px;
+            border: 1px solid var(--border-light);
+            transition: var(--transition-smooth);
         }
-        
+
+        .checkbox-group:hover {
+            background: white;
+            border-color: var(--primary-soft);
+        }
+
         .checkbox-group input[type="checkbox"] {
-            width: auto;
+            width: 1.3rem;
+            height: 1.3rem;
+            accent-color: var(--primary-deep);
+            cursor: pointer;
         }
-        
+
+        .checkbox-group label {
+            margin-bottom: 0;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-transform: none;
+            letter-spacing: 0.02em;
+            color: var(--text-dark);
+            opacity: 1;
+        }
+
+        /* ----- FILE INPUT – custom styling -------------------------- */
         .file-input {
-            padding: 8px;
+            padding: 0.9rem 1.2rem;
+            border: 1.8px dashed var(--border-soft);
+            border-radius: 56px;
+            background: #fafdfe;
+            cursor: pointer;
         }
-        
+
+        .file-input:hover {
+            border-color: var(--primary-soft);
+            background: white;
+        }
+
+        .file-input::-webkit-file-upload-button {
+            background: var(--primary-deep);
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border: none;
+            border-radius: 40px;
+            font-weight: 540;
+            margin-right: 1rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .file-input::-webkit-file-upload-button:hover {
+            background: var(--primary-soft);
+            transform: translateY(-1px);
+        }
+
+        .form-text {
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-left: 0.5rem;
+        }
+
+        /* ----- CURRENT IMAGE – premium display ---------------------- */
         .current-image {
-            margin-top: 10px;
+            margin-top: 1.2rem;
+            padding: 1.2rem 1.5rem;
+            background: #f3f9fc;
+            border-radius: 28px;
+            border: 1px solid var(--border-light);
         }
-        
+
+        .current-image p {
+            font-size: 0.75rem;
+            font-weight: 590;
+            color: var(--primary-deep);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.8rem;
+        }
+
         .current-image img {
-            max-width: 200px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
+            max-width: 240px;
+            width: 100%;
+            border-radius: 20px;
+            border: 2px solid white;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-smooth);
         }
-        
+
+        .current-image img:hover {
+            transform: scale(1.02);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* ----- SUBMIT BUTTON – premium, cohesive -------------------- */
+        .btn-submit {
+            width: 100%;
+            padding: 1.2rem 1.8rem;
+            background: var(--primary-deep);
+            color: white;
+            border: none;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 560;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 8px 18px -12px rgba(26,79,90,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.7rem;
+            margin-top: 2.2rem;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-soft);
+            transform: translateY(-3px);
+            box-shadow: 0 24px 32px -18px rgba(26,100,112,0.5);
+        }
+
+        .btn-submit:active {
+            transform: translateY(1px);
+            background: #134b56;
+        }
+
+        /* ----- RESPONSIVE ------------------------------------------- */
         @media (max-width: 768px) {
             .form-row {
                 grid-template-columns: 1fr;
+                gap: 1rem;
             }
             
             .form-container {
-                padding: 20px;
-                margin: 20px;
+                padding: 2rem 1.5rem;
+            }
+            
+            .form-header h2 {
+                font-size: 1.8rem;
+            }
+            
+            .header-container {
+                flex-direction: column;
+                gap: 0.8rem;
+                text-align: center;
             }
         }
+
+        @media (max-width: 480px) {
+            .form-wrapper {
+                padding: 0 1rem;
+            }
+            
+            .form-container {
+                padding: 1.8rem 1.2rem;
+                border-radius: 32px;
+            }
+            
+            .btn-back {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        ::selection { background: rgba(26,79,90,0.08); color: #0a404b; }
+        :focus-visible { outline: 3px solid rgba(26,79,90,0.2); outline-offset: 3px; border-radius: 30px; }
+        .fa, .fas, .far, .fab { font-variant-emoji: none; }
     </style>
 </head>
 <body>
-    <!-- Header -->
+    <!-- HEADER – consistent with Car Management System -->
     <header class="main-header">
         <div class="header-container">
             <div class="logo">
-                <i class="fas fa-car"></i>
-                <div>
-                    <h1>Premium Car Rental</h1>
-                    <p>Admin Dashboard</p>
+                <i class="fas fa-car-side"></i>
+                <div class="logo-text">
+                    <h1>Car Manager</h1>
+                    <span>Edit vehicle</span>
                 </div>
+            </div>
+            <div class="user-menu" style="display: flex; gap: 1rem;">
+                <!-- Optional: Add user greeting if user context exists -->
+                <span style="color: var(--text-muted); font-size: 0.85rem;">
+                    <i class="fas fa-user-shield"></i> Admin
+                </span>
             </div>
         </div>
     </header>
     
-    <!-- Main Content -->
+    <!-- MAIN CONTENT -->
     <main>
-        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+        <div class="form-wrapper">
+            <!-- BACK BUTTON -->
             <a href="{% url 'admin_dashboard' %}" class="btn-back">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
+                <i class="fas fa-arrow-left"></i> Back to dashboard
             </a>
             
+            <!-- EDIT CAR FORM CARD -->
             <div class="form-container">
                 <div class="form-header">
-                    <h2><i class="fas fa-edit"></i> Edit Car</h2>
+                    <h2>
+                        <i class="fas fa-edit"></i> Edit vehicle
+                    </h2>
                     <p>Update the details of {{ car.brand }} {{ car.name }}</p>
                 </div>
                 
@@ -210,36 +518,36 @@
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="brand">Brand *</label>
-                            <input type="text" id="brand" name="brand" class="form-control" value="{{ car.brand }}" required>
+                            <label for="brand">Brand <span style="color: var(--primary-soft);">*</span></label>
+                            <input type="text" id="brand" name="brand" class="form-control" value="{{ car.brand }}" placeholder="e.g. Toyota, Honda" required>
                         </div>
                         
                         <div class="form-group">
-                            <label for="name">Model Name *</label>
-                            <input type="text" id="name" name="name" class="form-control" value="{{ car.name }}" required>
+                            <label for="name">Model name <span style="color: var(--primary-soft);">*</span></label>
+                            <input type="text" id="name" name="name" class="form-control" value="{{ car.name }}" placeholder="e.g. Camry, Civic" required>
                         </div>
                     </div>
                     
                     <div class="form-group">
                         <label for="description">Description</label>
-                        <textarea id="description" name="description" class="form-control" placeholder="Enter car description...">{{ car.description }}</textarea>
+                        <textarea id="description" name="description" class="form-control" placeholder="Enter vehicle description, features, and specifications...">{{ car.description }}</textarea>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="price_per_day">Price per Day (₱) *</label>
-                            <input type="number" id="price_per_day" name="price_per_day" class="form-control" step="0.01" value="{{ car.price_per_day }}" required>
+                            <label for="price_per_day">Price per day (₱) <span style="color: var(--primary-soft);">*</span></label>
+                            <input type="number" id="price_per_day" name="price_per_day" class="form-control" step="0.01" min="0" value="{{ car.price_per_day }}" placeholder="0.00" required>
                         </div>
                         
                         <div class="form-group">
-                            <label for="seats">Number of Seats *</label>
-                            <input type="number" id="seats" name="seats" class="form-control" min="1" max="10" value="{{ car.seats }}" required>
+                            <label for="seats">Number of seats <span style="color: var(--primary-soft);">*</span></label>
+                            <input type="number" id="seats" name="seats" class="form-control" min="1" max="10" value="{{ car.seats }}" placeholder="4, 5, 7" required>
                         </div>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="transmission">Transmission *</label>
+                            <label for="transmission">Transmission <span style="color: var(--primary-soft);">*</span></label>
                             <select id="transmission" name="transmission" class="form-control" required>
                                 <option value="automatic" {% if car.transmission == 'automatic' %}selected{% endif %}>Automatic</option>
                                 <option value="manual" {% if car.transmission == 'manual' %}selected{% endif %}>Manual</option>
@@ -247,7 +555,7 @@
                         </div>
                         
                         <div class="form-group">
-                            <label for="fuel_type">Fuel Type *</label>
+                            <label for="fuel_type">Fuel type <span style="color: var(--primary-soft);">*</span></label>
                             <select id="fuel_type" name="fuel_type" class="form-control" required>
                                 <option value="gasoline" {% if car.fuel_type == 'gasoline' %}selected{% endif %}>Gasoline</option>
                                 <option value="diesel" {% if car.fuel_type == 'diesel' %}selected{% endif %}>Diesel</option>
@@ -258,13 +566,13 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="image">Car Image</label>
+                        <label for="image">Vehicle image</label>
                         <input type="file" id="image" name="image" class="form-control file-input" accept="image/*">
-                        <small style="color: #666;">Upload a new image to replace the current one (optional)</small>
+                        <span class="form-text">Upload a new image to replace the current one (optional)</span>
                         
                         {% if car.image %}
                         <div class="current-image">
-                            <p>Current Image:</p>
+                            <p><i class="fas fa-image"></i> Current image</p>
                             <img src="{{ car.image.url }}" alt="{{ car.brand }} {{ car.name }}">
                         </div>
                         {% endif %}
@@ -275,14 +583,36 @@
                             <input type="checkbox" id="is_available" name="is_available" {% if car.is_available %}checked{% endif %}>
                             <label for="is_available">Available for booking</label>
                         </div>
+                        <span class="form-text">Uncheck to mark this vehicle as temporarily unavailable</span>
                     </div>
                     
                     <button type="submit" class="btn-submit">
-                        <i class="fas fa-save"></i> Update Car
+                        <i class="fas fa-save"></i> Update vehicle
                     </button>
                 </form>
             </div>
         </div>
     </main>
+    
+    <!-- FOOTER – optional, lightweight -->
+    <div style="margin-top: 3rem; text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.75rem;">
+        <span>© 2024 Car Management System · Admin panel</span>
+    </div>
+    
+    <script>
+        // Add cursor pointer to file input label enhancement
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.querySelector('.file-input');
+            if (fileInput) {
+                fileInput.addEventListener('change', function(e) {
+                    const fileName = e.target.files[0]?.name;
+                    if (fileName) {
+                        // Optional: show selected filename (already visible by default)
+                        console.log('Selected file:', fileName);
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
